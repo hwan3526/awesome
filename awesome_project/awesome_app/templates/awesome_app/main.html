@@ -12,7 +12,7 @@
   </head>
 
   <body>
-    {% include 'dangun_app/nav.html' %}
+    {% include 'awesome_app/nav.html' %}
 
     <div class="content-box section1">
       <div class="container between flex-box">
@@ -35,7 +35,7 @@
         <div class="description-box">
           <h1>우리 동네<br>중고 직거래 마켓</h1>
           <p>동네 주민들과 가깝고 따뜻한 거래를 지금 경험해보세요</p>
-          <a href="{% url 'dangun_app:trade' %}">
+          <a href="{% url 'awesome_app:trade' %}">
             <button class="button-gray">인기매물 보기</button>
           </a>
         </div>
@@ -87,7 +87,7 @@
           {% for post in posts %}
 
             <div class="card-box">
-              <a href="{% url 'dangun_app:trade_post' post.pk %}" class="trade-text-link">
+              <a href="{% url 'awesome_app:trade_post' post.pk %}" class="trade-text-link">
                 <div class="card-img">
                   {% if post.images %}
                     <img src="{{ post.images.url }}" alt="{{ post.title }}">
@@ -114,7 +114,7 @@
       </div>
     </div>
   </div>
-  {% include 'dangun_app/footer.html' %}
+  {% include 'awesome_app/footer.html' %}
 
 </body>
 
