@@ -1,5 +1,6 @@
-{% load custom_filter%}
-{% load static%}{% load humanize %}
+{% comment %} {% load custom_filter%} {% endcomment %}
+{% load static%}
+{% comment %} {% load humanize %} {% endcomment %}
 <!DOCTYPE html>
 <html>
 
@@ -13,14 +14,16 @@
   </head>
 
   <body>
-    {% include 'dangun_app/nav.html' %}
+    {% include 'awesome_app/nav.html' %}
     <div class="content-box">
       <div class="container">
 
         {% block content %}
           <div class="about-trade">
             <div class="container">
-              <form class="write-box" method="POST" action="{% if post %}{% url 'dangun_app:edit' post.id %}{% else %}{% url 'dangun_app:create_form' %}{% endif %}" enctype="multipart/form-data">
+              {% comment %} db연결되면 밑에꺼로 form 대체해야됨 {% endcomment %}
+              {% comment %} <form class="write-box" method="POST" action="{% if post %}{% url 'edit' post.id %}{% else %}{% url 'create_form' %}{% endif %}" enctype="multipart/form-data"> {% endcomment %}
+              <form class="write-box" method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="flex-box">
                   <label class="img-upload">

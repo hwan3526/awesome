@@ -1,4 +1,5 @@
-{% load static%}{% load humanize %}
+{% load static%}
+{% comment %} {% load humanize %} {% endcomment %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -15,7 +16,7 @@
   </head>
 
   <body>
-    {% include 'dangun_app/nav.html' %}
+    {% include 'awesome_app/nav.html' %}
     <div class="content-box">
       <div class="container column">
         <div class="post-box">
@@ -35,7 +36,7 @@
                 </div>
               {% else %}
                 <div class="button-box">
-                  <a href="{% url 'dangun_app:chat' %}">
+                  <a href="{% url 'chat' %}">
                     <button class="orange">채팅하기</button>
                   </a>
                 </div>
@@ -45,8 +46,10 @@
             <div class="post-info-box">
               <div class="flex-box between">
                 <h3>{{ post.title }}</h3>
-                <h3>{{ post.price |intcomma}}
-                  원</h3>
+                <h3>
+                  {% comment %} {{ post.price |intcomma}} {% endcomment %}
+                  15000원
+                </h3>
               </div>
               <p>{{ post.description }}</p>
               <div class="location-views-box flex-box between">
@@ -60,7 +63,7 @@
         </div>
       </div>
     </div>
-    {% include 'dangun_app/footer.html' %}
+    {% include 'awesome_app/footer.html' %}
 
   </body>
 
