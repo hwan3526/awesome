@@ -1,0 +1,5 @@
+awesome-env/
+awesome_project/awesome_app/migrations/
+awesome_project/awesome_project/secrets.json
+db.sqlite3
+*.pyc
