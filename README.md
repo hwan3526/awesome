@@ -1,0 +1,2 @@
+# awesome
+Django danggeun project
