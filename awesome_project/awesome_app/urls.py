@@ -5,7 +5,7 @@ app_name = 'awesome_app'
 
 urlpatterns = [
     path('', views.index, name='main'),
-    path('login/', views.login, name='login'),
+    path('login/', views.custom_login, name='login'),
     path('logout/', views.logout, name='logout'),
     path('register/', views.register, name='register'),
 

@@ -1,11 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-# class user(models.Model):
-#     mobile_number = models.CharField(max_length=11)
-#     activated = models.BooleanField()
-#     rating_score = models.DecimalField(max_digits=3, decimal_places=1)
-#     created_at = models.DateTimeField(auto_now_add=True)
+class user(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    profile_img = models.CharField(max_length=255)
+    mobile_number = models.CharField(max_length=11)
+    activated = models.BooleanField()
+    rating_score = models.DecimalField(max_digits=3, decimal_places=1)
+    created_at = models.DateTimeField(auto_now_add=True)
 
 class follow_User(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='following')
@@ -35,11 +37,11 @@ class sido_areas(models.Model):
     name = models.CharField(max_length=50)
     version = models.CharField(max_length=20)
     
-# class sigg_areas(models.Model):
-#     sido_area = models.ForeignKey(sido_areas,on_delete=models.CASCADE)
-#     adm_code = models.CharField(max_length=5)
-#     name = models.CharField(max_length=50)
-#     version = models.CharField(max_length=20)
+class sigg_areas(models.Model):
+    sido_area = models.ForeignKey(sido_areas,on_delete=models.CASCADE)
+    adm_code = models.CharField(max_length=5)
+    name = models.CharField(max_length=50)
+    version = models.CharField(max_length=20)
 
 # class emd_areas(models.Model):
 #     sigg_area =models.ForeignKey(sigg_areas, on_delete=models.CASCADE)
