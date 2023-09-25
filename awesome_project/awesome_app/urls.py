@@ -10,8 +10,9 @@ urlpatterns = [
     path('register/', views.register, name='register'),
 
     path('trade/', views.trade, name='trade'),
-    path('trade_post/', views.trade_post,name='trade_post'),
+    path('trade_post/<int:pk>/', views.trade_post,name='trade_post'),
     path('write/', views.write, name='write'),
+    path('edit/<int:id>/', views.edit, name='edit'),
 
     path('search/', views.search, name='search'),
     path('chat/', views.chat, name='chat'),

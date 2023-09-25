@@ -1,4 +1,5 @@
 from django import forms
+from .models import Post
 
 class CustomLoginForm(forms.Form):
     username = forms.CharField(
@@ -28,3 +29,8 @@ class CustomRegistrationForm(forms.Form):
         label='비밀번호 확인',
         label_suffix='', 
     )
+
+class PostForm(forms.ModelForm):
+    class Meta:
+        model = Post
+        fields = ['title', 'price', 'description', 'location', 'images']

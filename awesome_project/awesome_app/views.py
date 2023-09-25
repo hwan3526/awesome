@@ -1,7 +1,9 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
+from .models import Post,UserProfile
 from .forms import CustomRegistrationForm, CustomLoginForm
 
 def index(request):
@@ -54,11 +56,62 @@ def logout(request):
 def trade(request):
     return render(request, 'awesome_app/trade.html')
 
-def trade_post(request):
-    return render(request, 'awesome_app/trade_post.html')
+# 중고거래상세정보(각 포스트) 화면
+def trade_post(request, pk):
+    post = get_object_or_404(Post, pk=pk)
 
+    
+    # 조회수 증가
+    if request.user.is_authenticated:
+        if request.user != post.user:
+            post.view_num += 1
+            post.save()
+    else:
+        post.view_num += 1
+        post.save()
+
+    try:
+        user_profile = UserProfile.objects.get(user=post.user)
+    except UserProfile.DoesNotExist:
+            user_profile = None
+
+    context = {
+        'post': post,
+        'user_profile': user_profile,
+    }
+
+    return render(request, 'awesome_app/trade_post.html', context)
+
+
+@login_required
 def write(request):
-    return render(request, 'awesome_app/write.html')
+    try:
+        user_profile = UserProfile.objects.get(user=request.user)
+        
+        if user_profile.region_certification == 'Y':
+            return render(request, 'awesome_app/write.html')
+        else:
+            return redirect('awesome_app:alert', alert_message='동네인증이 필요합니다.')
+    except UserProfile.DoesNotExist:
+        return redirect('awesome_app:alert', alert_message='동네인증이 필요합니다.')
+    
+# 거래글수정 화면
+def edit(request, id):
+    post = get_object_or_404(Post, id=id)
+    if post:
+        post.description = post.description.strip()
+    if request.method == "POST":
+        post.title = request.POST['title']
+        post.price = request.POST['price']
+        post.description = request.POST['description']
+        post.location = request.POST['location']
+        if 'images' in request.FILES:
+            post.images = request.FILES['images']
+        post.save()
+        return redirect('awesome_app:trade_post', pk=id)
+
+    return render(request, 'awesome_app/write.html', {'post': post})
+
 
 def search(request):
     posts = []
