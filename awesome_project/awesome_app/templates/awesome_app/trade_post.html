@@ -1,5 +1,5 @@
 {% load static%}
-{% comment %} {% load humanize %} {% endcomment %}
+{% load humanize %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -21,7 +21,7 @@
       <div class="container column">
         <div class="post-box">
           {% block content %}
-            <img src="{{ post.images.url }}" alt="{{ post.title }}" class="block-box">
+            <img src="{% static post.images.url %}" alt="{{ post.title }}" class="block-box">
             <div class="flex-box between info-button-box">
               <div class="user-info">
                 <h6>{{ post.user }}</h6>
@@ -29,14 +29,14 @@
               </div>
               {% if request.user.username == post.user.username %}
                 <div class="flex-box button-box">
-                  <a href="{% url 'dangun_app:edit' post.id %}">
+                  <a href="{% url 'awesome_app:edit' post.id %}">
                     <button class="grey">수정하기</button>
                   </a>
                   <button class="orange">채팅보기</button>
                 </div>
               {% else %}
                 <div class="button-box">
-                  <a href="{% url 'chat' %}">
+                  <a href="{% url 'awesome_app:chat' %}">
                     <button class="orange">채팅하기</button>
                   </a>
                 </div>
@@ -47,8 +47,8 @@
               <div class="flex-box between">
                 <h3>{{ post.title }}</h3>
                 <h3>
-                  {% comment %} {{ post.price |intcomma}} {% endcomment %}
-                  15000원
+                  {{ post.price | intcomma }}
+                  {% comment %} 15000원 {% endcomment %}
                 </h3>
               </div>
               <p>{{ post.description }}</p>
