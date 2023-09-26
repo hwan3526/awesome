@@ -73,7 +73,6 @@ def create_post(request):
 
 def trade(request):
     top_views_posts = Post.objects.filter(product_sold='N').order_by('-view_num')[:4] 
-    print(top_views_posts)
     return render(request, 'awesome_app/trade.html', {'posts': top_views_posts})
 
 # 중고거래상세정보(각 포스트) 화면
