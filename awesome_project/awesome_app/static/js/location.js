@@ -97,6 +97,3 @@ document.getElementById("region-form").addEventListener("submit", function (e) {
     alert("지역을 입력해주세요");
   }
 });
-regionSaveButton.addEventListener("click", function () {
-  alert("인증이 완료되었습니다");
-});

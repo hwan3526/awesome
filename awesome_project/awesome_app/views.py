@@ -128,7 +128,6 @@ def edit(request, id):
 
     return render(request, 'awesome_app/write.html', {'post': post})
 
-
 def search(request):
     query = request.GET.get('search')
     if query:
@@ -138,9 +137,30 @@ def search(request):
     
     return render(request, 'awesome_app/search.html', {'posts': results})
 
-def location(request):
-    return render(request, 'awesome_app/location.html')
-
 def chat(request):
     region = ''
     return render(request, 'awesome_app/chat.html', {"region" : region})
+
+def location(request):
+    try:
+        user_profile = UserProfile.objects.get(user=request.user.id)
+        region = user_profile.region if user_profile.region != None else ''
+    except UserProfile.DoesNotExist:
+        obj = UserProfile(user=User.objects.get(id=request.user.id),activated=True,rating_score=0.0)
+        obj.save()
+        region = ''
+    return render(request, 'awesome_app/location.html', {"region": region})
+
+def set_region(request):
+    region = request.POST.get('region-setting')
+    user_profile = UserProfile.objects.get(user=request.user.id)
+    user_profile.region = region
+    user_profile.region_certification = 'N'
+    user_profile.save()
+    return redirect('awesome_app:alert',alert_message='내 동네 설정이 완료되었습니다.')
+
+def set_region_certification(request):
+    user_profile = UserProfile.objects.get(user=request.user.id)
+    user_profile.region_certification = 'Y'
+    user_profile.save()
+    return redirect('awesome_app:alert',alert_message='동네 인증이 완료되었습니다.')
