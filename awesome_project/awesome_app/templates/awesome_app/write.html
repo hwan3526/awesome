@@ -21,9 +21,9 @@
         {% block content %}
           <div class="about-trade">
             <div class="container">
-              {% comment %} db연결되면 밑에꺼로 form 대체해야됨 {% endcomment %}
-              {% comment %} <form class="write-box" method="POST" action="{% if post %}{% url 'edit' post.id %}{% else %}{% url 'create_form' %}{% endif %}" enctype="multipart/form-data"> {% endcomment %}
-              <form class="write-box" method="POST" enctype="multipart/form-data">
+              {% comment %} db연결되면 밑에꺼로 form 대체해야됨 -> 대체함 {% endcomment %}
+              <form class="write-box" method="POST" action="{% if post %}{% url 'awesome_app:edit' post.id %}{% else %}{% url 'awesome_app:create_form' %}{% endif %}" enctype="multipart/form-data"> 
+              {% comment %} <form class="write-box" method="POST" enctype="multipart/form-data"> {% endcomment %}
                 {% csrf_token %}
                 <div class="flex-box">
                   <label class="img-upload">

@@ -2,12 +2,15 @@ from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
 
-class user(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+class user_profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')    
     profile_img = models.CharField(max_length=255)
     mobile_number = models.CharField(max_length=11)
     activated = models.BooleanField()
     rating_score = models.DecimalField(max_digits=3, decimal_places=1)
+
+    region = models.CharField(max_length=100, null=True)
+    region_certification = models.CharField(max_length=1, default='N')
     created_at = models.DateTimeField(auto_now_add=True)
 
 class follow_User(models.Model):
@@ -76,20 +79,33 @@ class sigg_areas(models.Model):
 #     authenticated_at = models.DateTimeField(null=True)
 
 class goods(models.Model):
-    seller = models.ForeignKey(User, on_delete=models.CASCADE)
-    selling_area = models.ForeignKey(sido_areas, on_delete=models.CASCADE)
-    category = models.ForeignKey(categories, on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
-    status = models.CharField(max_length=10)
-    sell_price = models.IntegerField(null=True)
-    view_price = models.IntegerField()
+    price = models.IntegerField(null=True)
     description = models.TextField()
-    refreshed_at = models.DateTimeField(auto_now_add=True)
+    location = models.CharField(max_length=100)
+    # location = models.ForeignKey(address_areas, on_delete=models.CASCADE)
+    images = models.ImageField(upload_to='post_images/', null=True) 
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
-class goods_images(models.Model):
-    goods = models.ForeignKey(goods, on_delete=models.CASCADE)
-    file = models.ForeignKey(files, on_delete=models.CASCADE)
+    product_reserved = models.CharField(max_length=1, default='N')  # 예약 여부
+    product_sold = models.CharField(max_length=1, default='N')  # 판매 여부
+
+    view_num = models.PositiveIntegerField(default=0)  # 조회 수
+    chat_num = models.PositiveIntegerField(default=0)  # 채팅 수
+
+    # 매물 카테고리
+    # category = models.ForeignKey(categories, on_delete=models.CASCADE)
+    # 공개 / 비공개 저장
+    # status = models.CharField(max_length=10)
+    # 끌어올린 날짜 저장
+    # refreshed_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
+    
+    class Meta:
+        ordering = ['-created_at']
 
 class transaction_reviews(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -132,33 +148,3 @@ class chat_messages(models.Model):
     message = models.CharField(max_length=500)
     read_or_not = models.BooleanField()
     created_at = models.DateTimeField(auto_now_add=True)
-
-class Post(models.Model):
-    title = models.CharField(max_length=200)
-    price = models.IntegerField()
-    description = models.TextField()
-    location = models.CharField(max_length=100)
-    images = models.ImageField(upload_to='post_images/') 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, to_field='username')
-    created_at = models.DateTimeField(auto_now_add=True, null=True) 
-
-    product_reserved = models.CharField(max_length=1, default='N')  # 예약 여부
-    product_sold = models.CharField(max_length=1, default='N')  # 판매 여부
-
-    view_num = models.PositiveIntegerField(default=0)  # 조회 수
-    chat_num = models.PositiveIntegerField(default=0)  # 채팅 수
-
-    def __str__(self):
-        return self.title
-    
-    class Meta:
-        ordering = ['-created_at']
-
-class UserProfile(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='profile')
-    region = models.CharField(max_length=100, null=True)
-    region_certification = models.CharField(max_length=1, default='N')
-
-    def __str__(self):
-        return f'{self.user.username} Profile'
-    
