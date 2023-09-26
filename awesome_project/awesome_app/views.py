@@ -133,9 +133,9 @@ def edit(request, id):
 def search(request):
     query = request.GET.get('search')
     if query:
-        results = goods.objects.filter(Q(title__icontains=query) | Q(location__icontains=query))
+        results = Post.objects.filter(Q(title__icontains=query) | Q(location__icontains=query))
     else:
-        results = goods.objects.all()
+        results = Post.objects.all()
     
     return render(request, 'awesome_app/search.html', {'posts': results})
 
