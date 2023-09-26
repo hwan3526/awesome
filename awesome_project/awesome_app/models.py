@@ -139,7 +139,8 @@ class wish_lists(models.Model):
 
 class chat_room(models.Model):
     goods = models.ForeignKey(goods, on_delete=models.CASCADE)
-    buyer = models.ForeignKey(User, on_delete=models.CASCADE)
+    buyer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='buyer')
+    seller = models.ForeignKey(User, on_delete=models.CASCADE, related_name='seller')
     created_at = models.DateTimeField(auto_now_add=True)
 
 class chat_messages(models.Model):  
