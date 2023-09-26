@@ -20,4 +20,6 @@ urlpatterns = [
     path('search/', views.search, name='search'),
     path('chat/', views.chat, name='chat'),
     path('location/', views.location, name='location'),
+    path('set_region/', views.set_region, name='set_region'),
+    path('set_region_certification/', views.set_region_certification, name='set_region_certification'),
 ]
