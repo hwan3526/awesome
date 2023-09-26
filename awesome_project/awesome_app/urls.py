@@ -18,8 +18,12 @@ urlpatterns = [
     path('edit/<int:id>/', views.edit, name='edit'),
 
     path('search/', views.search, name='search'),
-    path('chat/', views.chat, name='chat'),
+    path('chat/<str:username>/<str:room_name>/', views.chat, name='chat'),
     path('location/', views.location, name='location'),
     path('set_region/', views.set_region, name='set_region'),
     path('set_region_certification/', views.set_region_certification, name='set_region_certification'),
+    
+    path('room/<str:username>/', views.room, name='room'),
+
 ]
+

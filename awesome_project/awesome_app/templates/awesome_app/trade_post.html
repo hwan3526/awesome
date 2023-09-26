@@ -36,7 +36,7 @@
                 </div>
               {% else %}
                 <div class="button-box">
-                  <a href="{% url 'awesome_app:chat' %}">
+                  <a href="{% url 'awesome_app:chat' username=user.username room_name=user.id %}">
                     <button class="orange">채팅하기</button>
                   </a>
                 </div>

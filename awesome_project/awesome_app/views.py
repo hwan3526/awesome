@@ -164,3 +164,18 @@ def set_region_certification(request):
     user_profile.region_certification = 'Y'
     user_profile.save()
     return redirect('awesome_app:alert',alert_message='동네 인증이 완료되었습니다.')
+
+@login_required
+def chat(request, room_name, username):
+    users = User.objects.get(username=username)
+    # room_num = User.objects.get(room_name=room_name)
+    return render(request, 'awesome_app/chat.html', {'room_name': room_name, 'username':users})
+
+def room(request, username):
+    try:
+        user = User.objects.get(username=username)
+        login(request, user)
+        return render(request, "awesome_app/chat.html", {'user': user})
+    except User.DoesNotExist:
+        # 사용자가 존재하지 않을 때 처리할 내용을 여기에 추가하세요.
+        pass

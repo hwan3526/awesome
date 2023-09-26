@@ -49,6 +49,34 @@ INSTALLED_APPS = [
     'rest_framework',
 ]
 
+## 프로젝트명.asgi.application
+ASGI_APPLICATION = "awesome_project.asgi.application"
+
+
+
+## 채널 - redis 연결 설정
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
+
+# 로그아웃 후 리디렉션 URL 설정
+LOGOUT_REDIRECT_URL = '/'
+
+# AUTHENTICATION_BACKENDS 설정 확인
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+# AUTHENTICATION_CLASSES 설정 확인
+AUTHENTICATION_CLASSES = [
+    'django.contrib.auth.authentication.AuthenticationMiddleware',
+]
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
