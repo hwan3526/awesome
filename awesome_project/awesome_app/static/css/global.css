@@ -1,5 +1,16 @@
+@font-face {
+    font-family: 'kdg_Medium';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts-20-12@1.0/kdg_Medium.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
 *{
     font-family: 'Pretendard', sans-serif;
+}
+
+h1, h3, h4 {
+    font-family: 'kdg_Medium', 'Pretendard', sans-serif;
 }
 
 button, a, link{
