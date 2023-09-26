@@ -1,6 +1,6 @@
-{% comment %} {% load custom_filter%} {% endcomment %}
+{% load custom_filter%}
 {% load static %}
-{% comment %} {% load humanize %} {% endcomment %}
+{% load humanize %}
 <!DOCTYPE html>
 <html>
 
@@ -46,14 +46,14 @@
               <a href="{% url 'awesome_app:trade_post' post.pk %}" class="trade-text-link">
                 <div class="card-img">
                   {% if post.images %}
-                    <img src="{{ post.images.url }}" alt="{{ post.title }}">
+                    <img src="{% static post.images.url %}" alt="{{ post.title }}">
                   {% endif %}
                 </div>
                 <div class="card-info-box">
                   <h5>{{ post.title }}</h5>
                   <p class="bold">
-                    {% comment %} {{ post.price |intcomma}} {% endcomment %}
-                    15000원
+                    {{ post.price |intcomma }}
+                    {% comment %} 15000원 {% endcomment %}
                   </p>
                   <p>{{ post.location }}</p>
                   <div class="flex-box">
