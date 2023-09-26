@@ -6,9 +6,12 @@ app_name = 'awesome_app'
 urlpatterns = [
     path('', views.index, name='main'),
     path('login/', views.custom_login, name='login'),
-    path('logout/', views.logout, name='logout'),
+    path('logout/', views.user_logout, name='logout'),
     path('register/', views.register, name='register'),
 
+    path('alert/<str:alert_message>/', views.alert, name='alert'),
+
+    path('create_form/', views.create_post, name='create_form'),
     path('trade/', views.trade, name='trade'),
     path('trade_post/<int:pk>/', views.trade_post,name='trade_post'),
     path('write/', views.write, name='write'),
