@@ -5,6 +5,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from .models import goods as Post, user_profile as UserProfile
 from .forms import CustomRegistrationForm, CustomLoginForm, PostForm
+from django.db.models import Q
+
 
 def index(request):
     return render(request, 'awesome_app/main.html')
@@ -129,8 +131,13 @@ def edit(request, id):
 
 
 def search(request):
-    posts = []
-    return render(request, 'awesome_app/search.html', {"posts": posts})
+    query = request.GET.get('search')
+    if query:
+        results = goods.objects.filter(Q(title__icontains=query) | Q(location__icontains=query))
+    else:
+        results = goods.objects.all()
+    
+    return render(request, 'awesome_app/search.html', {'posts': results})
 
 def location(request):
     return render(request, 'awesome_app/location.html')
