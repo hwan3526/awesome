@@ -32,6 +32,22 @@ class files(models.Model):
     type = models.CharField(max_length=50)
     name = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
+
+class address_areas(models.Model):
+    sido = models.CharField(max_length=50)
+    sigg = models.CharField(max_length=50)
+    emd = models.CharField(max_length=50)
+    load_code = models.CharField(max_length=50)
+    load_name = models.CharField(max_length=50)
+    building_bonbeon = models.CharField(max_length=50)
+    building_bubeon = models.CharField(max_length=50)
+    zip_code = models.CharField(max_length=50)
+    building_num = models.CharField(max_length=50)
+    building_x = models.DecimalField(max_digits=20, decimal_places=6)
+    building_y = models.DecimalField(max_digits=20, decimal_places=6)
+    entrance_x = models.DecimalField(max_digits=20, decimal_places=6, null=True)
+    entrance_y = models.DecimalField(max_digits=20, decimal_places=6, null=True)
+    emd_gubun = models.CharField(max_length=50)
     
 class sido_areas(models.Model):
     adm_code = models.CharField(max_length=2)
