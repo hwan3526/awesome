@@ -50,28 +50,32 @@
                 </div>
               </div>
               <!-- 채팅방리스트 -->
-              {% comment %} <a href="{% url 'room' username=user.username %}"> {% endcomment %}
-              <div class="flex-box chat-box between">
+              {% for msg in latest_messages %}
+              
+              <div class="flex-box chat-box between" onclick="redirectToChat({{ msg.chat_room_id }}, {{ msg.seller_id }})">
                 
-                <div>
-                  <div class="flex-box">
-                    <p class="bold">상대방아이디</p>
-                    <p class="s-text">화곡동</p>
-                    <p class="s-text">3주전</p>
+                  <div>
+                    <div class="flex-box">
+                      <p class="bold">{{ msg.seller }}</p>
+                      <p class="s-text">{{ msg.seller_location }}</p>
+                      <p class="s-text">{{ msg.created_at }}</p>
+                    </div>
+                    <p class="chat-thumb-text">{{ msg.message }}</p>
                   </div>
-                  <p class="chat-thumb-text">거래 잘 하셨나요? 거래한 이웃..</p>
-                </div>
-                <div class="thumbnail-box">
-                  <img src="" alt="">
-                </div>
-                
+                  <div class="thumbnail-box">
+                    <img src="" alt="">
+                  </div>
+
               </div>
-            {% comment %} </a> {% endcomment %}
+              
+              {% endfor %}
             </div>
           </div>
           
           <!-- 채팅창-->
           <div class="chat-main-container">
+
+            {% if chat_msgs %}
               <div style="height:500px">
                 <div class="contact-info flex-box">
                   상대방아이디
@@ -97,15 +101,15 @@
               <!--채팅창 메인-->
               <div class="chat-container" id="chat-log">
                 {% for chat in chat_msgs %}
-                  {% if request.user.id != chat.sender.id %}
+                  {% if request.user.username != chat.username %}
                   <div class="message-box from-you">
-                    <div class="message-text">입금확인했습니다~</div>
-                    <p class="s-text">오전 8:20</p>
+                    <div class="message-text">{{ chat.message }}</div>
+                    <p class="s-text">{{ chat.created_at }}</p>
                   </div>
                   {% else %}
                   <div class="message-box from-me">
-                    <p class="s-text">오전 8:20</p>
-                    <div class="message-text">네 좋은물건 감사합니다~</div>
+                    <p class="s-text">{{ chat.created_at }}</p>
+                    <div class="message-text">{{ chat.message }}</div>
                   </div>
                   {% endif %}
                 {% endfor %}
@@ -116,7 +120,14 @@
               <textarea type="text" id="chat-message-input" name="message" cols="30" rows="10" placeholder="메세지를 입력해주세요"></textarea>
               <div><button id="chat-message-submit" type="button">전송</button></div>
             </form>
+
+            {% else %}
+            <div class="awesome_logo">
+              <img src="{% static 'img/awesome_logo.png' %}">
+            </div>
+            {% endif %}
           </div>
+
         </div>
       </div>
     </div>
@@ -128,65 +139,82 @@
     const chatLog = document.querySelector('#chat-log');
     const messageInputDom = document.querySelector('#chat-message-input');
     const chatMessageSubmitBtn = document.querySelector('#chat-message-submit');
-    const username = document.getElementById('username').textContent.trim(); // 유저명을 가져오세요.
-    /* const chatSocket = new WebSocket(
-            'ws://'
-            + window.location.host
-            + '/ws/chat/'
-            + username
-            + '/'
-            + room_name
-            + '/'
-        ); */
-    const now = new Date();
-    const hours = now.getHours().toString().padStart(2, '0');
-    const minutes = now.getMinutes().toString().padStart(2, '0');
-    const currentTime = `${hours}:${minutes}`;
+    const username = "{{ user.username }}";
+    const room_number = parseInt("{{ room_number }}");
+
+    const ws = new WebSocket('ws://127.0.0.1:8000/ws/chat/' + room_number + '/');
+
+    function getCurrentTime() {
+      const now = new Date();
+      const hours = now.getHours();
+      const minutes = now.getMinutes();
+
+      const amOrPm = hours >= 12 ? 'PM' : 'AM';
+      const formattedHours = hours % 12 || 12;
+      const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+
+      const currentTime = `오늘 ${amOrPm} ${formattedHours}:${formattedMinutes}`;
+
+      return currentTime;
+    }
+
+    const currentTime = getCurrentTime();
+
+    ws.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        const messageContainer = document.createElement('div');
+
+        const currentUser = data.username;
+
+        if (currentUser === username) {
+          messageContainer.className = 'message-box from-me';
+          messageContainer.innerHTML = `
+              <p class="s-text">${data.created_at}</p>
+              <div class="message-text">${data.message}</div>
+          `;
+        } else {
+          messageContainer.className = 'message-box from-you';
+          messageContainer.innerHTML = `
+              <div class="message-text">${data.message}</div>
+              <p class="s-text">${data.created_at}</p>
+          `;
+        }
+        chatLog.appendChild(messageContainer);
+    };
 
     chatMessageSubmitBtn.addEventListener('click', function() {
         const message = messageInputDom.value;
         if (message.trim() !== '') { // 빈 메시지는 추가하지 않음
-            addMessageToChatLog(message);
+
+            ws.send(JSON.stringify({
+                  'message': message,
+                  'username': username,
+                  'room_number': room_number,
+                  'created_at': currentTime
+            }));
+            
             messageInputDom.value = '';
             scrollToBottom();// 메시지를 추가한 후에 스크롤을 아래로 이동
         };
+    });
 
-
-        chatMessageSubmitBtn.addEventListener('click', function() {
-          const message = messageInputDom.value;
-          if (message.trim() !== '') {
-              chatSocket.send(JSON.stringify({
-                  'message': message,
-                  'username': username // 메시지와 유저명을 전송합니다.
-              }));
-              messageInputDom.value = '';
-          }
-    })
+  document.querySelector('#chat-message-input').addEventListener('keydown', function(e) {
+    if (e.keyCode === 13) {  // enter, return
+        e.preventDefault(); // 폼 제출을 막음
+        document.querySelector('#chat-message-submit').click();
+    }
   });
 
-    document.querySelector('#chat-message-input').addEventListener('keydown', function(e) {
-      if (e.keyCode === 13) {  // enter, return
-          e.preventDefault(); // 폼 제출을 막음
-          document.querySelector('#chat-message-submit').click();
-          
-      }
-  });
-    function addMessageToChatLog(message) {
-        const messageContainer = document.createElement('div');
-        messageContainer.className = 'message-box from-me';
-        messageContainer.innerHTML = `
-        
-            <p class="s-text">${currentTime}</p>
-            <div class="message-text">${message}</div>
-        
-        `;
-        chatLog.appendChild(messageContainer);
-        
-    }
-    function scrollToBottom() {
-      chatLog.scrollTop = chatLog.scrollHeight;
-    }
+  function scrollToBottom() {
+    chatLog.scrollTop = chatLog.scrollHeight;
+  }
   
 });
+
+  function redirectToChat(chatRoomId, senderId) {
+    // JavaScript로 원하는 동작을 수행
+    // 예: 클라이언트 측에서 URL로 이동
+    window.location.href = `/chat/${chatRoomId}/${senderId}`;
+  }
 </script>
 </html>

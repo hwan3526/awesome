@@ -103,7 +103,7 @@ from channels.db import database_sync_to_async
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
+        self.room_name = self.scope["url_route"]["kwargs"]["room_number"]
         self.room_group_name = "chat_%s" % self.room_name
 
         # Join room group
