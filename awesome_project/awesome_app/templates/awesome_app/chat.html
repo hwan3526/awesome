@@ -72,7 +72,7 @@
           
           <!-- 채팅창-->
           <div class="chat-main-container">
-              <div style="heigt:500px">
+              <div style="height:500px">
                 <div class="contact-info flex-box">
                   상대방아이디
                   <div class="temp">
@@ -96,10 +96,19 @@
 
               <!--채팅창 메인-->
               <div class="chat-container" id="chat-log">
-                {% comment %} <div class="message-box from-you">
-                  <div class="message-text">입금확인했습니다~</div>
-                  <p class="s-text">오전 8:20</p>
-                </div> {% endcomment %}
+                {% for chat in chat_msgs %}
+                  {% if request.user.id != chat.sender.id %}
+                  <div class="message-box from-you">
+                    <div class="message-text">입금확인했습니다~</div>
+                    <p class="s-text">오전 8:20</p>
+                  </div>
+                  {% else %}
+                  <div class="message-box from-me">
+                    <p class="s-text">오전 8:20</p>
+                    <div class="message-text">네 좋은물건 감사합니다~</div>
+                  </div>
+                  {% endif %}
+                {% endfor %}
               </div>
             </div>
 
