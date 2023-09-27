@@ -97,15 +97,15 @@
               <!--채팅창 메인-->
               <div class="chat-container" id="chat-log">
                 {% for chat in chat_msgs %}
-                  {% if request.user.id != chat.sender.id %}
+                  {% if request.user.username != chat.username %}
                   <div class="message-box from-you">
-                    <div class="message-text">입금확인했습니다~</div>
-                    <p class="s-text">오전 8:20</p>
+                    <div class="message-text">{{ chat.message }}</div>
+                    <p class="s-text">{{ chat.created_at }}</p>
                   </div>
                   {% else %}
                   <div class="message-box from-me">
-                    <p class="s-text">오전 8:20</p>
-                    <div class="message-text">네 좋은물건 감사합니다~</div>
+                    <p class="s-text">{{ chat.created_at }}</p>
+                    <div class="message-text">{{ chat.message }}</div>
                   </div>
                   {% endif %}
                 {% endfor %}
@@ -128,64 +128,67 @@
     const chatLog = document.querySelector('#chat-log');
     const messageInputDom = document.querySelector('#chat-message-input');
     const chatMessageSubmitBtn = document.querySelector('#chat-message-submit');
-    const username = document.getElementById('username').textContent.trim(); // 유저명을 가져오세요.
-    /* const chatSocket = new WebSocket(
-            'ws://'
-            + window.location.host
-            + '/ws/chat/'
-            + username
-            + '/'
-            + room_name
-            + '/'
-        ); */
-    const now = new Date();
-    const hours = now.getHours().toString().padStart(2, '0');
-    const minutes = now.getMinutes().toString().padStart(2, '0');
-    const currentTime = `${hours}:${minutes}`;
+    const username = "{{ user.username }}";
+    const room_number = parseInt("{{ room_number }}");
+
+    const ws = new WebSocket('ws://127.0.0.1:8000/ws/chat/' + room_number + '/');
+
+    function getCurrentTime() {
+      const now = new Date();
+      const hours = now.getHours();
+      const minutes = now.getMinutes();
+
+      const amOrPm = hours >= 12 ? 'PM' : 'AM';
+      const formattedHours = hours % 12 || 12;
+      const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+
+      const currentTime = `오늘 ${amOrPm} ${formattedHours}:${formattedMinutes}`;
+
+      return currentTime;
+    }
+
+    const currentTime = getCurrentTime();
 
     chatMessageSubmitBtn.addEventListener('click', function() {
         const message = messageInputDom.value;
         if (message.trim() !== '') { // 빈 메시지는 추가하지 않음
             addMessageToChatLog(message);
+
+            ws.send(JSON.stringify({
+                  'message': message,
+                  'username': username,
+                  'room_number': room_number,
+                  'created_at': currentTime
+            }));
+            
             messageInputDom.value = '';
             scrollToBottom();// 메시지를 추가한 후에 스크롤을 아래로 이동
         };
+    });
 
-
-        chatMessageSubmitBtn.addEventListener('click', function() {
-          const message = messageInputDom.value;
-          if (message.trim() !== '') {
-              chatSocket.send(JSON.stringify({
-                  'message': message,
-                  'username': username // 메시지와 유저명을 전송합니다.
-              }));
-              messageInputDom.value = '';
-          }
-    })
+  document.querySelector('#chat-message-input').addEventListener('keydown', function(e) {
+    if (e.keyCode === 13) {  // enter, return
+        e.preventDefault(); // 폼 제출을 막음
+        document.querySelector('#chat-message-submit').click();
+    }
   });
 
-    document.querySelector('#chat-message-input').addEventListener('keydown', function(e) {
-      if (e.keyCode === 13) {  // enter, return
-          e.preventDefault(); // 폼 제출을 막음
-          document.querySelector('#chat-message-submit').click();
-          
-      }
-  });
-    function addMessageToChatLog(message) {
-        const messageContainer = document.createElement('div');
-        messageContainer.className = 'message-box from-me';
-        messageContainer.innerHTML = `
-        
-            <p class="s-text">${currentTime}</p>
-            <div class="message-text">${message}</div>
-        
-        `;
-        chatLog.appendChild(messageContainer);
-        
-    }
-    function scrollToBottom() {
-      chatLog.scrollTop = chatLog.scrollHeight;
-    }
+  function addMessageToChatLog(message) {
+      const messageContainer = document.createElement('div');
+      messageContainer.className = 'message-box from-me';
+      messageContainer.innerHTML = `
+      
+          <p class="s-text">${currentTime}</p>
+          <div class="message-text">${message}</div>
+      
+      `;
+      chatLog.appendChild(messageContainer);
+      
+  }
+
+  function scrollToBottom() {
+    chatLog.scrollTop = chatLog.scrollHeight;
+  }
   
 });
 </script>
