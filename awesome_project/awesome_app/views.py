@@ -214,11 +214,11 @@ def set_region_certification(request):
     user_profile.save()
     return redirect('awesome_app:alert',alert_message='동네 인증이 완료되었습니다.')
 
-@login_required
-def chat(request, room_name, username):
-    users = User.objects.get(username=username)
-    # room_num = User.objects.get(room_name=room_name)
-    return render(request, 'awesome_app/chat.html', {'room_name': room_name, 'username':users})
+# @login_required
+# def chat(request, room_name, username):
+#     users = User.objects.get(username=username)
+#     # room_num = User.objects.get(room_name=room_name)
+#     return render(request, 'awesome_app/chat.html', {'room_name': room_name, 'username':users})
 
 def room(request, username):
     try:
