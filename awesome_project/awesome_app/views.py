@@ -1,5 +1,5 @@
 from django.http import JsonResponse
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404, HttpResponse
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
@@ -21,7 +21,7 @@ def register(request):
         username = request.POST.get('username')
 
         if User.objects.filter(username=username).exists():
-            error_message = "이미 존재하는 아이디입니다."
+            form.add_error('username', '이미 존재하는 아이디입니다. 다른 아이디를 입력해주세요.')
         elif form.is_valid():
             password1 = form.cleaned_data['password1']
             password2 = form.cleaned_data['password2']
@@ -32,7 +32,7 @@ def register(request):
                     login(request, user)
                     return redirect('awesome_app:login')
             else:
-                form.add_error('password2', 'Passwords do not match')
+                form.add_error('password2', '비밀번호가 일치하지 않습니다.')
     else:
         form = CustomRegistrationForm()
     

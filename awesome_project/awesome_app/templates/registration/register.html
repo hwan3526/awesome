@@ -21,7 +21,16 @@
         <div class="login-container">
           <form method="post" class="login-form">
             {% csrf_token %}
-            {{ form.as_p }}
+            {% for field in form %}
+            <div class ="form-group">
+                <label for = "{{ field.id_for_label }}">{{field.label}}</label>
+                <input type = "{{ field.field.widget.input_type }}" class ="login-input" id ="{{field.id_for_label}}" 
+                placeholder = "{{field.label}}" name = "{{field.name}}">
+            </div>
+            {% if field.errors %}
+            <span style = "color:red">{{field.errors}}</span>
+            {% endif %}
+            {% endfor %}
             <button type="submit" class="login-button">등록</button>
           </form>
           <p class="register-reco">
