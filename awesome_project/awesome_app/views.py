@@ -1,11 +1,13 @@
+from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from .models import goods as Post, user_profile as UserProfile
+from .models import goods as Post, user_profile as UserProfile, chat_room, chat_messages
 from .forms import CustomRegistrationForm, CustomLoginForm, PostForm
 from django.db.models import Q
+from django.utils import timezone
 
 
 def index(request):
@@ -38,7 +40,7 @@ def register(request):
 
 def custom_login(request):
     if request.user.is_authenticated:
-        return redirect('index')
+        return redirect('awesome_app:main')
     else:
         form = CustomLoginForm(data=request.POST or None)
         if request.method == 'POST':
@@ -137,9 +139,56 @@ def search(request):
     
     return render(request, 'awesome_app/search.html', {'posts': results})
 
-def chat(request):
-    region = ''
-    return render(request, 'awesome_app/chat.html', {"region" : region})
+def chat(request, seller_id, goods):
+    seller = User.objects.get(id=seller_id)
+    buyer = User.objects.get(id=request.user.id)
+    post = Post.objects.get(id=goods)
+    room_number = 0
+
+    try:
+        find_chat_room = chat_room.objects.get(buyer=buyer, seller=seller)
+        room_number = find_chat_room.id
+        chat_msgs = chat_messages.objects.filter(chat_room=find_chat_room)
+    except chat_room.DoesNotExist:
+        chat_msgs = None
+        new_chat_room = chat_room.objects.create(buyer=buyer, seller=seller, goods=post)
+        room_number = new_chat_room.id
+
+    context = {
+        "room_number" : room_number,
+        "chat_msgs" : chat_msgs
+    }
+
+    return render(request, 'awesome_app/chat.html', context)
+
+@login_required
+def chat_msg(request, room_number):
+    room = get_object_or_404(chat_room, pk=room_number)
+
+    current_time = timezone.now()
+    three_days_ago = current_time - timezone.timedelta(days=3)
+    chat_msgs = chat_messages.objects.filter(chat_room=room, created_at__gte=three_days_ago).order_by('-created_at')
+
+    if request.method == 'POST':
+        chatInput = request.POST.get('chat-send-msg')
+        sender = request.user
+        chat_msg = chat_messages(chat_room=room, sender=sender, message=chatInput, read_or_not=False)
+        chat_msg.save()
+
+        response_data = {
+            'created_at': chat_msg.created_at.strftime("%A %I:%M %p"),
+            'message': chat_msg.message,
+            'username': chat_msg.sender.username,
+        }
+
+        return JsonResponse(response_data)
+
+    context = {
+        "room_number" : room_number,
+        "chat_msgs" : chat_msgs
+    }
+
+    return render(request, 'awesome_app/chat.html', context)
 
 def location(request):
     try:

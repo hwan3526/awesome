@@ -32,11 +32,13 @@
                   <a href="{% url 'awesome_app:edit' post.id %}">
                     <button class="grey">수정하기</button>
                   </a>
-                  <button class="orange">채팅보기</button>
+                  <a href="{% url 'awesome_app:chat' request.user.id post.id %}">
+                    <button class="orange">채팅보기</button>
+                  </a>
                 </div>
               {% else %}
                 <div class="button-box">
-                  <a href="{% url 'awesome_app:chat' username=user.username room_name=user.id %}">
+                  <a href="{% url 'awesome_app:chat' post.user.id post.id %}">
                     <button class="orange">채팅하기</button>
                   </a>
                 </div>
