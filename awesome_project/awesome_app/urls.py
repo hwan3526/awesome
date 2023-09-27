@@ -22,7 +22,7 @@ urlpatterns = [
     path('set_region/', views.set_region, name='set_region'),
     path('set_region_certification/', views.set_region_certification, name='set_region_certification'),
 
-    path('chat/<int:seller_id>/<int:goods>', views.chat, name='chat'),
+    path('chat/<int:room_number>/<int:seller_id>', views.current_chat, name='chat'),
     path('chat_msg/<int:room_number>', views.chat_msg, name='chat_msg'),
 ]
 
