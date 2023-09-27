@@ -50,28 +50,32 @@
                 </div>
               </div>
               <!-- 채팅방리스트 -->
-              {% comment %} <a href="{% url 'room' username=user.username %}"> {% endcomment %}
-              <div class="flex-box chat-box between">
+              {% for msg in latest_messages %}
+              
+              <div class="flex-box chat-box between" onclick="redirectToChat({{ msg.chat_room_id }}, {{ msg.seller_id }})">
                 
-                <div>
-                  <div class="flex-box">
-                    <p class="bold">상대방아이디</p>
-                    <p class="s-text">화곡동</p>
-                    <p class="s-text">3주전</p>
+                  <div>
+                    <div class="flex-box">
+                      <p class="bold">{{ msg.seller }}</p>
+                      <p class="s-text">{{ msg.seller_location }}</p>
+                      <p class="s-text">{{ msg.created_at }}</p>
+                    </div>
+                    <p class="chat-thumb-text">{{ msg.message }}</p>
                   </div>
-                  <p class="chat-thumb-text">거래 잘 하셨나요? 거래한 이웃..</p>
-                </div>
-                <div class="thumbnail-box">
-                  <img src="" alt="">
-                </div>
-                
+                  <div class="thumbnail-box">
+                    <img src="" alt="">
+                  </div>
+
               </div>
-            {% comment %} </a> {% endcomment %}
+              
+              {% endfor %}
             </div>
           </div>
           
           <!-- 채팅창-->
           <div class="chat-main-container">
+
+            {% if chat_msgs %}
               <div style="height:500px">
                 <div class="contact-info flex-box">
                   상대방아이디
@@ -116,7 +120,14 @@
               <textarea type="text" id="chat-message-input" name="message" cols="30" rows="10" placeholder="메세지를 입력해주세요"></textarea>
               <div><button id="chat-message-submit" type="button">전송</button></div>
             </form>
+
+            {% else %}
+            <div class="awesome_logo" style="background: none;">
+              <img src="{% static 'img/awesome_logo.png' %}"  style="background:none; max-width: 100%; height: auto;">
+            </div>
+            {% endif %}
           </div>
+
         </div>
       </div>
     </div>
@@ -149,10 +160,31 @@
 
     const currentTime = getCurrentTime();
 
+    ws.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        const messageContainer = document.createElement('div');
+
+        const currentUser = data.username;
+
+        if (currentUser === username) {
+          messageContainer.className = 'message-box from-me';
+          messageContainer.innerHTML = `
+              <p class="s-text">${data.created_at}</p>
+              <div class="message-text">${data.message}</div>
+          `;
+        } else {
+          messageContainer.className = 'message-box from-you';
+          messageContainer.innerHTML = `
+              <div class="message-text">${data.message}</div>
+              <p class="s-text">${data.created_at}</p>
+          `;
+        }
+        chatLog.appendChild(messageContainer);
+    };
+
     chatMessageSubmitBtn.addEventListener('click', function() {
         const message = messageInputDom.value;
         if (message.trim() !== '') { // 빈 메시지는 추가하지 않음
-            addMessageToChatLog(message);
 
             ws.send(JSON.stringify({
                   'message': message,
@@ -173,23 +205,16 @@
     }
   });
 
-  function addMessageToChatLog(message) {
-      const messageContainer = document.createElement('div');
-      messageContainer.className = 'message-box from-me';
-      messageContainer.innerHTML = `
-      
-          <p class="s-text">${currentTime}</p>
-          <div class="message-text">${message}</div>
-      
-      `;
-      chatLog.appendChild(messageContainer);
-      
-  }
-
   function scrollToBottom() {
     chatLog.scrollTop = chatLog.scrollHeight;
   }
   
 });
+
+  function redirectToChat(chatRoomId, senderId) {
+    // JavaScript로 원하는 동작을 수행
+    // 예: 클라이언트 측에서 URL로 이동
+    window.location.href = `/chat/${chatRoomId}/${senderId}`;
+  }
 </script>
 </html>
