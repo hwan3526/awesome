@@ -219,10 +219,14 @@ hr{
     
 }
 
-.from-me div{
+.from-me div {
     background-color: #fa6616;
     color: #fff;
     margin : 5px
+}
+
+.from-you div {
+    margin: 5px;
 }
 
 /* 작성창 */
