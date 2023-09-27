@@ -139,11 +139,22 @@ def search(request):
     
     return render(request, 'awesome_app/search.html', {'posts': results})
 
+def format_datetime(dt):
+    today = timezone.now().date()
+    if dt.date() == today:
+        return dt.strftime("오늘 %p %I:%M")
+    yesterday = today - timezone.timedelta(days=1)
+    if dt.date() == yesterday:
+        return dt.strftime("어제 %p %I:%M")
+    return dt.strftime("%Y-%m-%d %p %I:%M")
+
 def chat(request, seller_id, goods):
     seller = User.objects.get(id=seller_id)
     buyer = User.objects.get(id=request.user.id)
     post = Post.objects.get(id=goods)
     room_number = 0
+
+    
 
     try:
         find_chat_room = chat_room.objects.get(buyer=buyer, seller=seller)
@@ -154,9 +165,17 @@ def chat(request, seller_id, goods):
         new_chat_room = chat_room.objects.create(buyer=buyer, seller=seller, goods=post)
         room_number = new_chat_room.id
 
+    formatted_chat_msgs = []
+    for msg in chat_msgs:
+        formatted_chat_msgs.append({
+            'created_at': format_datetime(msg.created_at),
+            'message': msg.message,
+            'username': msg.sender.username,
+        })
+
     context = {
         "room_number" : room_number,
-        "chat_msgs" : chat_msgs
+        "chat_msgs" : formatted_chat_msgs
     }
 
     return render(request, 'awesome_app/chat.html', context)
@@ -169,6 +188,8 @@ def chat_msg(request, room_number):
     three_days_ago = current_time - timezone.timedelta(days=3)
     chat_msgs = chat_messages.objects.filter(chat_room=room, created_at__gte=three_days_ago).order_by('-created_at')
 
+    created_at = format_datetime(chat_msg.created_at)
+
     if request.method == 'POST':
         chatInput = request.POST.get('chat-send-msg')
         sender = request.user
@@ -176,7 +197,7 @@ def chat_msg(request, room_number):
         chat_msg.save()
 
         response_data = {
-            'created_at': chat_msg.created_at.strftime("%A %I:%M %p"),
+            'created_at': created_at,
             'message': chat_msg.message,
             'username': chat_msg.sender.username,
         }
