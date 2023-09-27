@@ -75,7 +75,21 @@ def create_post(request):
 
 def trade(request):
     top_views_posts = Post.objects.filter(product_sold='N').order_by('-view_num')[:4] 
+
+    for post in top_views_posts:
+        chats = chat_room.objects.filter(goods=post, seller=post.user)
+        post.chat_num = len(chats)
+        post.save()
+
     return render(request, 'awesome_app/trade.html', {'posts': top_views_posts})
+
+def find_room_number(request, post):
+    room_number = chat_room.objects.filter(
+        (Q(buyer=request.user.id) | Q(seller=request.user.id))
+        &
+        (Q(buyer=post.user.id) | Q(seller=post.user.id))
+    ).first()
+    return room_number.id
 
 # 중고거래상세정보(각 포스트) 화면
 def trade_post(request, pk):
@@ -92,11 +106,16 @@ def trade_post(request, pk):
     try:
         user_profile = UserProfile.objects.get(user=post.user)
     except UserProfile.DoesNotExist:
-            user_profile = None
+        user_profile = None
+
+    room_number = find_room_number(request, post)
+    if room_number is None:
+        room_number = 0
 
     context = {
         'post': post,
         'user_profile': user_profile,
+        'room_number': room_number
     }
 
     return render(request, 'awesome_app/trade_post.html', context)
@@ -148,34 +167,68 @@ def format_datetime(dt):
         return dt.strftime("어제 %p %I:%M")
     return dt.strftime("%Y-%m-%d %p %I:%M")
 
-def chat(request, seller_id, goods):
-    seller = User.objects.get(id=seller_id)
-    buyer = User.objects.get(id=request.user.id)
-    post = Post.objects.get(id=goods)
-    room_number = 0
+def get_rooms(request):
+    chat_rooms = chat_room.objects.filter(Q(buyer=request.user.id) | Q(seller=request.user.id))
 
-    
+    latest_messages = []
+    for room in chat_rooms:
+        try:
+            latest_message = chat_messages.objects.filter(chat_room=room).latest('created_at')
+            seller = None
 
-    try:
-        find_chat_room = chat_room.objects.get(buyer=buyer, seller=seller)
-        room_number = find_chat_room.id
-        chat_msgs = chat_messages.objects.filter(chat_room=find_chat_room)
-    except chat_room.DoesNotExist:
-        chat_msgs = None
-        new_chat_room = chat_room.objects.create(buyer=buyer, seller=seller, goods=post)
-        room_number = new_chat_room.id
+            if latest_message.chat_room.buyer == request.user:
+                seller = latest_message.chat_room.seller
+            else:
+                seller = latest_message.chat_room.buyer
 
+            try:
+                seller_location = UserProfile.objects.get(user=seller).region
+            except UserProfile.DoesNotExist:
+                seller_location = ''
+
+            latest_messages.append({
+                'chat_room_id': room.id,
+                'seller_id': seller.id,
+                'seller': seller,
+                'seller_location': seller_location,
+                'message': latest_message.message,
+                'created_at': format_datetime(latest_message.created_at),
+            })
+        except chat_messages.DoesNotExist:
+            pass
+
+    latest_messages.sort(key=lambda x: x['created_at'], reverse=True)
+
+    return latest_messages
+
+def current_chat(request, room_number, seller_id):
+    current_chat = None
     formatted_chat_msgs = []
-    for msg in chat_msgs:
-        formatted_chat_msgs.append({
-            'created_at': format_datetime(msg.created_at),
-            'message': msg.message,
-            'username': msg.sender.username,
-        })
+
+    if room_number == 0:
+        if seller_id == request.user.id:
+            # 네비바에서 '채팅하기' 클릭한 경우 고객상담챗 열리도록
+            pass
+        else:
+            seller = User.objects.get(id=seller_id)
+            buyer = User.objects.get(id=request.user.id)
+            new_chat_room = chat_room.objects.create(buyer=buyer, seller=seller)
+            room_number = new_chat_room.id
+    else:
+        current_room = chat_room.objects.get(id=room_number)
+        current_chat = chat_messages.objects.filter(chat_room=current_room)
+
+        for msg in current_chat:
+            formatted_chat_msgs.append({
+                'created_at': format_datetime(msg.created_at),
+                'message': msg.message,
+                'username': msg.sender.username,
+            })
 
     context = {
         "room_number" : room_number,
-        "chat_msgs" : formatted_chat_msgs
+        "chat_msgs" : formatted_chat_msgs,
+        "latest_messages" : get_rooms(request)
     }
 
     return render(request, 'awesome_app/chat.html', context)
@@ -240,12 +293,3 @@ def set_region_certification(request):
 #     users = User.objects.get(username=username)
 #     # room_num = User.objects.get(room_name=room_name)
 #     return render(request, 'awesome_app/chat.html', {'room_name': room_name, 'username':users})
-
-def room(request, username):
-    try:
-        user = User.objects.get(username=username)
-        login(request, user)
-        return render(request, "awesome_app/chat.html", {'user': user})
-    except User.DoesNotExist:
-        # 사용자가 존재하지 않을 때 처리할 내용을 여기에 추가하세요.
-        pass
