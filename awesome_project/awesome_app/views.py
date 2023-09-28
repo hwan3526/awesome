@@ -211,6 +211,7 @@ def get_rooms(request):
 def current_chat(request, room_number, seller_id):
     current_chat = None
     formatted_chat_msgs = []
+    first_unread_index = -1
 
     if room_number == 0:
         if seller_id == request.user.id:
@@ -223,26 +224,23 @@ def current_chat(request, room_number, seller_id):
             room_number = new_chat_room.id
     else:
         current_room = chat_room.objects.get(id=room_number)
-        current_chat = chat_messages.objects.filter(chat_room=current_room).order_by('created_at')
-        
-        first_unread_index = -1
+        current_chat = chat_messages.objects.filter(chat_room=current_room).order_by('created_at')     
 
         for i, chat in enumerate(current_chat):
             if chat.read_or_not == False:
-                if first_unread_index == -1:
-                    first_unread_index = i
-                if chat.sender != request.user.id:
+                if chat.sender.id != request.user.id:
                     chat.read_or_not = True
                     chat.save()
-
-        print(first_unread_index)
+                    if first_unread_index == -1:
+                        first_unread_index = chat.id
 
         for chat in current_chat:
             formatted_chat_msgs.append({
                 'created_at': format_datetime(chat.created_at),
                 'message': chat.message,
                 'username': chat.sender.username,
-                'is_read': chat.read_or_not
+                'is_read': chat.read_or_not, 
+                'id': chat.id,
             })
 
     context = {
