@@ -173,6 +173,12 @@ def get_rooms(request):
     latest_messages = []
     for room in chat_rooms:
         try:
+            unread_message_count = chat_messages.objects.filter(
+                Q(chat_room=room),
+                ~Q(sender=request.user),
+                Q(read_or_not=False)
+            ).count()
+
             latest_message = chat_messages.objects.filter(chat_room=room).latest('created_at')
             seller = None
 
@@ -184,7 +190,7 @@ def get_rooms(request):
             try:
                 seller_location = UserProfile.objects.get(user=seller).region
             except UserProfile.DoesNotExist:
-                seller_location = ''
+                seller_location = '' 
 
             latest_messages.append({
                 'chat_room_id': room.id,
@@ -193,6 +199,7 @@ def get_rooms(request):
                 'seller_location': seller_location,
                 'message': latest_message.message,
                 'created_at': format_datetime(latest_message.created_at),
+                'unread_message_count': unread_message_count,
             })
         except chat_messages.DoesNotExist:
             pass
@@ -217,6 +224,10 @@ def current_chat(request, room_number, seller_id):
     else:
         current_room = chat_room.objects.get(id=room_number)
         current_chat = chat_messages.objects.filter(chat_room=current_room)
+        
+        for chat in current_chat:
+            chat.read_or_not = True
+            chat.save()
 
         for msg in current_chat:
             formatted_chat_msgs.append({
