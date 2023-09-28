@@ -80,7 +80,7 @@
           <!-- 채팅창-->
           <div class="chat-main-container">
 
-            {% if chat_msgs %}
+              {% if chat_msgs %}
               <div style="height:500px">
                 <div class="contact-info flex-box">
                   상대방아이디
@@ -110,15 +110,32 @@
                   <div class="message-box from-you">
                     <div class="message-text">{{ chat.message }}</div>
                     <p class="s-text">{{ chat.created_at }}</p>
+                    {% if chat.is_read == False %}
+                      <p class="s-text unread">읽지 않음</p>
+                    {% endif %}
                   </div>
                   {% else %}
                   <div class="message-box from-me">
+                    {% if chat.is_read %}
+                      <p class="s-text">읽음</p>
+                    {% else %}
+                      <p class="s-text">읽지 않음</p>
+                    {% endif %}
                     <p class="s-text">{{ chat.created_at }}</p>
                     <div class="message-text">{{ chat.message }}</div>
                   </div>
                   {% endif %}
                 {% endfor %}
               </div>
+
+              <div class='toast'>
+                <div id="toast-popup" class="toast-popup">
+                  <div class="toast-content">
+                    <p class="toast-message">새 메시지가 도착했습니다!</p>
+                  </div>
+                </div>
+              </div>
+
             </div>
 
             <form class="chat-input" id="chat-form">
@@ -165,6 +182,15 @@
 
     const currentTime = getCurrentTime();
 
+    function showNewMessagePopup() {
+      const toastPopup = document.querySelector('.toast');
+      toastPopup.style.display = 'flex';
+    
+      setTimeout(function() {
+          toastPopup.style.display = 'none';
+      }, 2500);
+    }
+
     ws.onmessage = function(e) {
         const data = JSON.parse(e.data);
         const messageContainer = document.createElement('div');
@@ -183,9 +209,19 @@
               <div class="message-text">${data.message}</div>
               <p class="s-text">${data.created_at}</p>
           `;
+
+          showNewMessagePopup();
         }
         chatLog.appendChild(messageContainer);
+
+        if (currentUser == username) {
+          scrollToBottom();
+        }
     };
+
+    function scrollToBottom() {
+      chatLog.scrollTop = chatLog.scrollHeight;
+    }
 
     chatMessageSubmitBtn.addEventListener('click', function() {
         const message = messageInputDom.value;
@@ -199,20 +235,15 @@
             }));
             
             messageInputDom.value = '';
-            scrollToBottom();// 메시지를 추가한 후에 스크롤을 아래로 이동
         };
     });
 
-  document.querySelector('#chat-message-input').addEventListener('keydown', function(e) {
-    if (e.keyCode === 13) {  // enter, return
-        e.preventDefault(); // 폼 제출을 막음
-        document.querySelector('#chat-message-submit').click();
-    }
+    document.querySelector('#chat-message-input').addEventListener('keydown', function(e) {
+      if (e.keyCode === 13) {  // enter, return
+          e.preventDefault(); // 폼 제출을 막음
+          document.querySelector('#chat-message-submit').click();
+      }
   });
-
-  function scrollToBottom() {
-    chatLog.scrollTop = chatLog.scrollHeight;
-  }
   
 });
 
@@ -244,7 +275,22 @@
     if (selectedChat) {
       selectedChat.classList.add('selected-chat');
     }
+
+    const firstUnreadIndex = "{{ first_unread_index }}";
+    const chatLog = document.getElementById('chat-log');
+    
+    if (firstUnreadIndex > 0) {
+      const unreadChat = chatLog.querySelectorAll('.unread')[0];
+      if (unreadChat) {
+        unreadChat.scrollIntoView({ behavior: "smooth", block: "center" });
+      } else {
+        chatLog.scrollTop = chatLog.scrollHeight;
+      }
+    } else {
+      chatLog.scrollTop = chatLog.scrollHeight;
+    }
   });
 });
+
 </script>
 </html>
