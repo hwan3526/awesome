@@ -182,10 +182,12 @@
 
     const currentTime = getCurrentTime();
 
-    function showNewMessagePopup() {
+    function showNewMessagePopup(messageContent) {
       const toastPopup = document.querySelector('.toast');
       toastPopup.style.display = 'flex';
-    
+      let message = document.querySelector('.toast-message');
+      message.textContent = messageContent;
+
       setTimeout(function() {
           toastPopup.style.display = 'none';
       }, 2500);
@@ -210,7 +212,9 @@
               <p class="s-text">${data.created_at}</p>
           `;
 
-          showNewMessagePopup();
+          const messageText = data.message.length > 10 ? data.message.slice(0, 10) + '...' : data.message;
+
+          showNewMessagePopup(messageText);
         }
         chatLog.appendChild(messageContainer);
 
@@ -290,6 +294,18 @@
       chatLog.scrollTop = chatLog.scrollHeight;
     }
   });
+
+  const chatListItems = document.querySelectorAll('.chat-box');
+
+chatListItems.forEach(item => {
+    const textElement = item.querySelector('.chat-thumb-text');
+    const maxTextLength = 15;
+
+    if (textElement.textContent.length > maxTextLength) {
+        const truncatedText = textElement.textContent.slice(0, maxTextLength) + '...';
+        textElement.textContent = truncatedText;
+    }
+});
 });
 
 </script>
