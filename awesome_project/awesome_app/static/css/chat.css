@@ -285,3 +285,22 @@ a{
     height: 100%;
     opacity: 0.5;
 }
+
+.message-content {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.unread_message_count {
+    font-size: 13px;
+    opacity: 0.8;
+    color: red;
+    justify-content: center;
+    align-items: center;
+}
+
+.selected-chat {
+    background-color: hsl(22, 85%, 65%);
+}
