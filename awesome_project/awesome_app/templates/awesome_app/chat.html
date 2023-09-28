@@ -3,161 +3,169 @@
 <!DOCTYPE html>
 <html lang="en">
 
-  <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <link rel="stylesheet" type="text/css" href="{% static 'css/reset.css' %}"/>
-    <link rel="stylesheet" type="text/css" href="{% static 'css/global.css' %}"/>
-    {% comment %} <link rel="stylesheet" type="text/css" href="{% static 'css/test.css' %}"/> {% endcomment %}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/nav.css' %}"/>
-    <link rel="stylesheet" type="text/css" href="{% static 'css/footer.css' %}"/>
-    <link rel="stylesheet" type="text/css" href="{% static 'css/chat.css' %}"/>
-    <title>채팅하기</title>
-  </head>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" type="text/css" href="{% static 'css/reset.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'css/global.css' %}" />
+  {% comment %}
+  <link rel="stylesheet" type="text/css" href="{% static 'css/test.css' %}" /> {% endcomment %}
+  <link rel="stylesheet" type="text/css" href="{% static 'css/nav.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'css/footer.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'css/chat.css' %}" />
+  <title>채팅하기</title>
+</head>
 
-  <body class="back-ye">
-    {% include 'awesome_app/nav.html' %}
-    <div class="content-box">
-      <div class="container column">
-        <div class="post-box flex-box">
+<body class="back-ye">
+  {% include 'awesome_app/nav.html' %}
+  <div class="content-box">
+    <div class="container column">
+      <div class="post-box flex-box">
 
-          <!-- 채팅선택창 -->
-          <div class="chat-select-container">
-            <div class="flex-box">
+        <!-- 채팅선택창 -->
+        <div class="chat-select-container">
+          <div class="flex-box">
 
-              <!-- 아이디및 체크박스 -->
-              <div class="id-box flex-box between">
-                <span id="username">{{ username }}</span>
-                <div>
-                  <label>
-                    안읽은 메세지만 보기
-                    <input type="checkbox" name="" id="">
-                  </label>
+            <!-- 아이디및 체크박스 -->
+            <div class="id-box flex-box between">
+              <span id="username">{{ username }}</span>
+              <div>
+                <label>
+                  안읽은 메세지만 보기
+                  <input type="checkbox" name="" id="">
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- 채팅 리스트 -->
+          <div class="chat-list-box flex-box column">
+            <!-- 봇 -->
+            <div class="chat-box flex-box">
+              <div class="ai-profile">
+                <img src="{% static 'img/icon_aibot.png'%}" alt="">
+              </div>
+              <div>
+                <p class="bold">AI 챗봇</p>
+                <p class="chat-thumb-text">궁금한 내용을 물어보세요!</p>
+              </div>
+            </div>
+            <!-- 채팅방리스트 -->
+            {% for msg in latest_messages %}
+
+            <div class="flex-box chat-box between" onclick="redirectToChat({{ msg.chat_room_id }}, {{ msg.seller_id }})"
+              data-chat-room-id="{{ msg.chat_room_id }}">
+
+              <div>
+                <div class="flex-box">
+                  <p class="bold">{{ msg.seller }}</p>
+                  <p class="s-text">{{ msg.seller_location }}</p>
+                  <p class="s-text">{{ msg.created_at }}</p>
                 </div>
+                <div class="message-content">
+                  <p class="chat-thumb-text">{{ msg.message }}</p>
+                  {% if msg.unread_message_count > 0 %}
+                  <p class="unread_message_count">{{ msg.unread_message_count }}</p>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="thumbnail-box">
+                <img src="" alt="">
+              </div>
+
+            </div>
+
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- 채팅창-->
+        <div class="chat-main-container">
+
+          {% if chat_msgs %}
+          <div style="height:500px">
+            <div class="contact-info flex-box">
+              상대방아이디
+              <div class="temp">
+                36.9도
               </div>
             </div>
 
-            <!-- 채팅 리스트 -->
-            <div class="chat-list-box flex-box column">
-              <!-- 봇 -->
-              <div class="chat-box flex-box">
-                <div class="ai-profile">
-                  <img src="{% static 'img/icon_aibot.png'%}" alt="">
+            <!--물품정보-->
+            <div class="goods-box flex-box between">
+              <div class="flex-box">
+                <div class="selected-thumbnail-box">
+                  <img src="" alt="">
                 </div>
-                <div>
-                  <p class="bold">AI 챗봇</p>
-                  <p class="chat-thumb-text">궁금한 내용을 물어보세요!</p>
+                <div class="goods-info-box">
+                  <p>LG 양문형 냉장고 778L</p>
+                  <p class="bold">150,000원</p>
                 </div>
               </div>
-              <!-- 채팅방리스트 -->
-              {% for msg in latest_messages %}
-              
-              <div class="flex-box chat-box between" onclick="redirectToChat({{ msg.chat_room_id }}, {{ msg.seller_id }})" data-chat-room-id="{{ msg.chat_room_id }}">
-                
-                  <div>
-                    <div class="flex-box">
-                      <p class="bold">{{ msg.seller }}</p>
-                      <p class="s-text">{{ msg.seller_location }}</p>
-                      <p class="s-text">{{ msg.created_at }}</p>
-                    </div>
-                    <div class="message-content">
-                      <p class="chat-thumb-text">{{ msg.message }}</p>
-                      {% if msg.unread_message_count > 0 %}
-                      <p class="unread_message_count">{{ msg.unread_message_count }}</p>
-                      {% endif %}
-                    </div>
-                  </div>
-                  <div class="thumbnail-box">
-                    <img src="" alt="">
-                  </div>
+              <button>거래완료</button>
+            </div>
 
+            <!--채팅창 메인-->
+            <div class="chat-container" id="chat-log">
+              {% for chat in chat_msgs %}
+              {% if request.user.username != chat.username %}
+              <div class="message-box from-you">
+                {% if chat.id > first_unread_index %}
+                <div class="message-text unread">{{ chat.message }}</div>
+                {% else %}
+                <div class="message-text">{{ chat.message }}</div>
+                {% endif %}
+                <p class="s-text">{{ chat.created_at }}</p>
+                {% if chat.is_read == False %}
+                <p class="s-text unread">읽지 않음</p>
+                {% endif %}
               </div>
-              
+              {% else %}
+              <div class="message-box from-me">
+                {% if chat.is_read %}
+                <p class="s-text">읽음</p>
+                {% else %}
+                <p class="s-text">읽지 않음</p>
+                {% endif %}
+                <p class="s-text">{{ chat.created_at }}</p>
+                <div class="message-text">{{ chat.message }}</div>
+              </div>
+              {% endif %}
               {% endfor %}
             </div>
-          </div>
-          
-          <!-- 채팅창-->
-          <div class="chat-main-container">
 
-              {% if chat_msgs %}
-              <div style="height:500px">
-                <div class="contact-info flex-box">
-                  상대방아이디
-                  <div class="temp">
-                      36.9도
-                  </div>
-                </div>
-
-              <!--물품정보-->
-              <div class="goods-box flex-box between">
-                <div class="flex-box">
-                  <div class="selected-thumbnail-box">
-                    <img src="" alt="">
-                  </div>
-                  <div class="goods-info-box">
-                    <p>LG 양문형 냉장고 778L</p>
-                    <p class="bold">150,000원</p>
-                  </div>
-                </div>
-                <button>거래완료</button>
-              </div>
-
-              <!--채팅창 메인-->
-              <div class="chat-container" id="chat-log">
-                {% for chat in chat_msgs %}
-                  {% if request.user.username != chat.username %}
-                  <div class="message-box from-you">
-                    <div class="message-text">{{ chat.message }}</div>
-                    <p class="s-text">{{ chat.created_at }}</p>
-                    {% if chat.is_read == False %}
-                      <p class="s-text unread">읽지 않음</p>
-                    {% endif %}
-                  </div>
-                  {% else %}
-                  <div class="message-box from-me">
-                    {% if chat.is_read %}
-                      <p class="s-text">읽음</p>
-                    {% else %}
-                      <p class="s-text">읽지 않음</p>
-                    {% endif %}
-                    <p class="s-text">{{ chat.created_at }}</p>
-                    <div class="message-text">{{ chat.message }}</div>
-                  </div>
-                  {% endif %}
-                {% endfor %}
-              </div>
-
-              <div class='toast'>
-                <div id="toast-popup" class="toast-popup">
-                  <div class="toast-content">
-                    <p class="toast-message">새 메시지가 도착했습니다!</p>
-                  </div>
+            <div class='toast'>
+              <div id="toast-popup" class="toast-popup">
+                <div class="toast-content">
+                  <p class="toast-message">새 메시지가 도착했습니다!</p>
                 </div>
               </div>
-
             </div>
 
-            <form class="chat-input" id="chat-form">
-              <textarea type="text" id="chat-message-input" name="message" cols="30" rows="10" placeholder="메세지를 입력해주세요"></textarea>
-              <div><button id="chat-message-submit" type="button">전송</button></div>
-            </form>
-
-            {% else %}
-            <div class="awesome_logo">
-              <img src="{% static 'img/awesome_logo.png' %}">
-            </div>
-            {% endif %}
           </div>
 
+          <form class="chat-input" id="chat-form">
+            {%csrf_token%}
+            <textarea type="text" id="chat-message-input" name="message" cols="30" rows="10"
+              placeholder="메세지를 입력해주세요"></textarea>
+            <div><button id="chat-message-submit" type="button">전송</button></div>
+          </form>
+
+          {% else %}
+          <div class="awesome_logo">
+            <img src="{% static 'img/awesome_logo.png' %}">
+          </div>
+          {% endif %}
         </div>
+
       </div>
     </div>
-    {% include 'awesome_app/footer.html' %}
+  </div>
+  {% include 'awesome_app/footer.html' %}
 
-  </body>
+</body>
 <script>
-  document.addEventListener("DOMContentLoaded", function() {
+  document.addEventListener("DOMContentLoaded", function () {
     const chatLog = document.querySelector('#chat-log');
     const messageInputDom = document.querySelector('#chat-message-input');
     const chatMessageSubmitBtn = document.querySelector('#chat-message-submit');
@@ -188,68 +196,85 @@
       let message = document.querySelector('.toast-message');
       message.textContent = messageContent;
 
-      setTimeout(function() {
-          toastPopup.style.display = 'none';
+      setTimeout(function () {
+        toastPopup.style.display = 'none';
       }, 2500);
     }
 
-    ws.onmessage = function(e) {
-        const data = JSON.parse(e.data);
-        const messageContainer = document.createElement('div');
+    ws.onmessage = function (e) {
+      const data = JSON.parse(e.data);
+      const messageContainer = document.createElement('div');
 
-        const currentUser = data.username;
+      const currentUser = data.username;
+      const messageId = data.message_id;
 
-        if (currentUser === username) {
-          messageContainer.className = 'message-box from-me';
-          messageContainer.innerHTML = `
-              <p class="s-text">${data.created_at}</p>
-              <div class="message-text">${data.message}</div>
-          `;
-        } else {
-          messageContainer.className = 'message-box from-you';
-          messageContainer.innerHTML = `
-              <div class="message-text">${data.message}</div>
-              <p class="s-text">${data.created_at}</p>
-          `;
+      if (currentUser === username) {
+        messageContainer.className = 'message-box from-me';
+        messageContainer.innerHTML = `
+            <p class="s-text">${data.created_at}</p>
+            <div class="message-text">${data.message}</div>
+        `;
+      } else {
+        messageContainer.className = 'message-box from-you';
+        messageContainer.innerHTML = `
+            <div class="message-text">${data.message}</div>
+            <p class="s-text">${data.created_at}</p>
+        `;
 
-          const messageText = data.message.length > 10 ? data.message.slice(0, 10) + '...' : data.message;
+        const messageText = data.message.length > 10 ? data.message.slice(0, 10) + '...' : data.message;
 
+        if (!isScrolledToBottom()) {
           showNewMessagePopup(messageText);
         }
-        chatLog.appendChild(messageContainer);
+      }
+      chatLog.appendChild(messageContainer);
 
-        if (currentUser == username) {
-          scrollToBottom();
-        }
+      if (currentUser == username) {
+        scrollToBottom();
+      }
+
+      if (isScrolledToBottom()) {
+        scrollToBottom();
+      }
     };
+
+    function isScrolledToBottom() {
+      const scrollThreshold = 54;
+      return chatLog.scrollHeight - chatLog.scrollTop <= chatLog.clientHeight + scrollThreshold;
+    }
+
 
     function scrollToBottom() {
       chatLog.scrollTop = chatLog.scrollHeight;
     }
 
-    chatMessageSubmitBtn.addEventListener('click', function() {
-        const message = messageInputDom.value;
-        if (message.trim() !== '') { // 빈 메시지는 추가하지 않음
+    chatMessageSubmitBtn.addEventListener('click', function () {
+      const message = messageInputDom.value;
+      if (message.trim() !== '') { // 빈 메시지는 추가하지 않음
 
-            ws.send(JSON.stringify({
-                  'message': message,
-                  'username': username,
-                  'room_number': room_number,
-                  'created_at': currentTime
-            }));
-            
-            messageInputDom.value = '';
-        };
+        ws.send(JSON.stringify({
+          'message': message,
+          'username': username,
+          'room_number': room_number,
+          'created_at': currentTime
+        }));
+
+        messageInputDom.value = '';
+      };
     });
 
-    document.querySelector('#chat-message-input').addEventListener('keydown', function(e) {
+    function generateMessageId() {
+      return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    }
+
+    document.querySelector('#chat-message-input').addEventListener('keydown', function (e) {
       if (e.keyCode === 13) {  // enter, return
-          e.preventDefault(); // 폼 제출을 막음
-          document.querySelector('#chat-message-submit').click();
+        e.preventDefault(); // 폼 제출을 막음
+        document.querySelector('#chat-message-submit').click();
       }
+    });
+
   });
-  
-});
 
   function redirectToChat(chatRoomId, senderId) {
     const chatBoxes = document.querySelectorAll('.chat-box');
@@ -265,48 +290,50 @@
     window.location.href = `/chat/${chatRoomId}/${senderId}`;
   }
 
-  document.addEventListener("DOMContentLoaded", function() {
-    window.addEventListener('load', function() {
-    const currentUrl = window.location.href;
-    const match = currentUrl.match(/chat\/(\d+)/);
-    let chatRoomId = 0;
+  document.addEventListener("DOMContentLoaded", function () {
+    window.addEventListener('load', function () {
+      const currentUrl = window.location.href;
+      const match = currentUrl.match(/chat\/(\d+)/);
+      let chatRoomId = 0;
 
-    if (match) {
-      chatRoomId = match[1]; 
-    } 
-    
-    const selectedChat = document.querySelector(`[data-chat-room-id="${chatRoomId}"]`);
-    if (selectedChat) {
-      selectedChat.classList.add('selected-chat');
-    }
+      if (match) {
+        chatRoomId = match[1];
+      }
 
-    const firstUnreadIndex = "{{ first_unread_index }}";
-    const chatLog = document.getElementById('chat-log');
-    
-    if (firstUnreadIndex > 0) {
-      const unreadChat = chatLog.querySelectorAll('.unread')[0];
-      if (unreadChat) {
-        unreadChat.scrollIntoView({ behavior: "smooth", block: "center" });
+      const selectedChat = document.querySelector(`[data-chat-room-id="${chatRoomId}"]`);
+      if (selectedChat) {
+        selectedChat.classList.add('selected-chat');
+      }
+
+      const firstUnreadIndex = "{{ first_unread_index }}";
+      const chatLog = document.getElementById('chat-log');
+
+      if (firstUnreadIndex > 0) {
+        const unreadChat = chatLog.querySelectorAll('.unread')[0];
+        if (unreadChat) {
+          unreadChat.scrollIntoView({ behavior: "smooth", block: "center" });
+        } else {
+          chatLog.scrollTop = chatLog.scrollHeight;
+        }
       } else {
         chatLog.scrollTop = chatLog.scrollHeight;
       }
-    } else {
-      chatLog.scrollTop = chatLog.scrollHeight;
-    }
-  });
+    });
 
-  const chatListItems = document.querySelectorAll('.chat-box');
+    const chatListItems = document.querySelectorAll('.chat-box');
 
-chatListItems.forEach(item => {
-    const textElement = item.querySelector('.chat-thumb-text');
-    const maxTextLength = 15;
+    chatListItems.forEach(item => {
+      const textElement = item.querySelector('.chat-thumb-text');
+      const maxTextLength = 15;
 
-    if (textElement.textContent.length > maxTextLength) {
+      if (textElement.textContent.length > maxTextLength) {
         const truncatedText = textElement.textContent.slice(0, maxTextLength) + '...';
         textElement.textContent = truncatedText;
-    }
-});
-});
+      }
+    });
+
+  });
 
 </script>
+
 </html>
