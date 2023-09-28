@@ -232,9 +232,8 @@ def current_chat(request, room_number, seller_id):
                 if first_unread_index == -1:
                     first_unread_index = i
                 if chat.sender != request.user.id:
-                    # chat.read_or_not = True
-                    # chat.save()
-                    pass
+                    chat.read_or_not = True
+                    chat.save()
 
         print(first_unread_index)
 
