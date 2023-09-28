@@ -223,23 +223,34 @@ def current_chat(request, room_number, seller_id):
             room_number = new_chat_room.id
     else:
         current_room = chat_room.objects.get(id=room_number)
-        current_chat = chat_messages.objects.filter(chat_room=current_room)
+        current_chat = chat_messages.objects.filter(chat_room=current_room).order_by('created_at')
         
-        for chat in current_chat:
-            chat.read_or_not = True
-            chat.save()
+        first_unread_index = -1
 
-        for msg in current_chat:
+        for i, chat in enumerate(current_chat):
+            if chat.read_or_not == False:
+                if first_unread_index == -1:
+                    first_unread_index = i
+                if chat.sender != request.user.id:
+                    # chat.read_or_not = True
+                    # chat.save()
+                    pass
+
+        print(first_unread_index)
+
+        for chat in current_chat:
             formatted_chat_msgs.append({
-                'created_at': format_datetime(msg.created_at),
-                'message': msg.message,
-                'username': msg.sender.username,
+                'created_at': format_datetime(chat.created_at),
+                'message': chat.message,
+                'username': chat.sender.username,
+                'is_read': chat.read_or_not
             })
 
     context = {
         "room_number" : room_number,
         "chat_msgs" : formatted_chat_msgs,
-        "latest_messages" : get_rooms(request)
+        "latest_messages" : get_rooms(request),
+        'first_unread_index': first_unread_index
     }
 
     return render(request, 'awesome_app/chat.html', context)
