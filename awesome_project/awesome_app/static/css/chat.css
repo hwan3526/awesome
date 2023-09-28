@@ -158,6 +158,8 @@ hr{
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+
+    position: relative;
 }
 
 .contact-info{
@@ -195,8 +197,9 @@ hr{
 
 /* 채팅창 메인 */
 .chat-container{
-    padding: 14px 20px;
-    max-height: 250px;
+    padding: 14px 20px 0px 20px;
+
+    max-height: 280px;
     overflow-y: auto; 
 }
 
@@ -204,7 +207,6 @@ hr{
     display: flex;
     align-items: center;
     gap: 8px;
-    
 }
 
 .message-text{
@@ -232,7 +234,7 @@ hr{
 /* 작성창 */
 .chat-input{
     background-color: #fff;
-    margin: 20px;
+    margin: 10px 20px 20px 20px;
     border:1px solid #818181;
     border-radius: 8px;
     justify-content: space-between;
@@ -284,4 +286,48 @@ a{
     max-height: 100%; 
     height: 100%;
     opacity: 0.5;
+}
+
+.message-content {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.unread_message_count {
+    font-size: 13px;
+    opacity: 0.8;
+    color: red;
+    justify-content: center;
+    align-items: center;
+}
+
+.selected-chat {
+    background-color: hsl(22, 100%, 60%);
+}
+
+.toast {
+    display: none;
+    bottom: 150px;
+    justify-content: center;
+    width: 100%;
+    padding-bottom: 10px;
+    position: absolute;
+    z-index: 3;
+}
+
+.toast-popup {   
+    background-color: #333;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 40px;
+    width: 20%;
+    opacity: 0.8;
+    justify-content: center;
+    display: flex;
+}
+
+.toast-content {
+    text-align: center;
 }
