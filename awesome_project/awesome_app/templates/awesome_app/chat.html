@@ -52,7 +52,7 @@
               <!-- 채팅방리스트 -->
               {% for msg in latest_messages %}
               
-              <div class="flex-box chat-box between" onclick="redirectToChat({{ msg.chat_room_id }}, {{ msg.seller_id }})">
+              <div class="flex-box chat-box between" onclick="redirectToChat({{ msg.chat_room_id }}, {{ msg.seller_id }})" data-chat-room-id="{{ msg.chat_room_id }}">
                 
                   <div>
                     <div class="flex-box">
@@ -60,7 +60,12 @@
                       <p class="s-text">{{ msg.seller_location }}</p>
                       <p class="s-text">{{ msg.created_at }}</p>
                     </div>
-                    <p class="chat-thumb-text">{{ msg.message }}</p>
+                    <div class="message-content">
+                      <p class="chat-thumb-text">{{ msg.message }}</p>
+                      {% if msg.unread_message_count > 0 %}
+                      <p class="unread_message_count">{{ msg.unread_message_count }}</p>
+                      {% endif %}
+                    </div>
                   </div>
                   <div class="thumbnail-box">
                     <img src="" alt="">
@@ -212,9 +217,34 @@
 });
 
   function redirectToChat(chatRoomId, senderId) {
-    // JavaScript로 원하는 동작을 수행
-    // 예: 클라이언트 측에서 URL로 이동
+    const chatBoxes = document.querySelectorAll('.chat-box');
+    chatBoxes.forEach(chatBox => {
+      chatBox.classList.remove('selected-chat');
+    });
+
+    const selectedChat = document.querySelector(`[data-chat-room-id="${chatRoomId}"]`);
+    if (selectedChat) {
+      selectedChat.classList.add('selected-chat');
+    }
+
     window.location.href = `/chat/${chatRoomId}/${senderId}`;
   }
+
+  document.addEventListener("DOMContentLoaded", function() {
+    window.addEventListener('load', function() {
+    const currentUrl = window.location.href;
+    const match = currentUrl.match(/chat\/(\d+)/);
+    let chatRoomId = 0;
+
+    if (match) {
+      chatRoomId = match[1]; 
+    } 
+    
+    const selectedChat = document.querySelector(`[data-chat-room-id="${chatRoomId}"]`);
+    if (selectedChat) {
+      selectedChat.classList.add('selected-chat');
+    }
+  });
+});
 </script>
 </html>
