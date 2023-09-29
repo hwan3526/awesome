@@ -74,7 +74,7 @@ def create_post(request):
     return render(request, 'awesome_app/trade_post.html', {'form': form})
 
 def trade(request):
-    top_views_posts = Post.objects.filter(product_sold='N').order_by('-view_num')[:4] 
+    top_views_posts = Post.objects.filter(product_sold='N').order_by('-view_num')
 
     for post in top_views_posts:
         chats = chat_room.objects.filter(goods=post, seller=post.user)
@@ -208,6 +208,12 @@ def get_rooms(request):
 
     return latest_messages
 
+def get_recent_trade(seller_id):
+    seller = User.objects.get(id=seller_id)
+    goods = Post.objects.filter(user=seller)
+
+    return goods
+
 def current_chat(request, room_number, seller_id):
     current_chat = None
     formatted_chat_msgs = []
@@ -243,11 +249,24 @@ def current_chat(request, room_number, seller_id):
                 'id': chat.id,
             })
 
+    seller_profile = {
+        'username': '',
+        'rating_score': 0.0
+    }
+    seller_profile['username'] = User.objects.get(id=seller_id).username
+    try:
+        profile = UserProfile.objects.get(id=seller_id)
+        seller_profile['rating_score'] = profile.rating_score
+    except UserProfile.DoesNotExist:
+        pass
+
     context = {
         "room_number" : room_number,
         "chat_msgs" : formatted_chat_msgs,
         "latest_messages" : get_rooms(request),
-        'first_unread_index': first_unread_index
+        'first_unread_index': first_unread_index,
+        'goods': get_recent_trade(seller_id),
+        'seller': seller_profile
     }
 
     return render(request, 'awesome_app/chat.html', context)
