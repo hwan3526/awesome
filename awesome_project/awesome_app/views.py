@@ -210,7 +210,7 @@ def get_rooms(request):
 
 def get_recent_trade(seller_id):
     seller = User.objects.get(id=seller_id)
-    goods = Post.objects.filter(user=seller)
+    goods = Post.objects.filter(user=seller).order_by('-created_at')
 
     return goods
 
