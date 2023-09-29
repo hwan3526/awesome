@@ -85,28 +85,45 @@
           {% if chat_msgs %}
           <div style="height:500px">
             <div class="contact-info flex-box">
-              상대방아이디
+              {% if seller %}
+              {{ seller.username }}
+              <div class="temp">
+                {{ seller.rating_score }}도
+              </div>
+              {% else %}
+              상대아이디
               <div class="temp">
                 36.9도
               </div>
+              {% endif %}
             </div>
 
             <!--물품정보-->
+            {% if goods %}
+            {% for good in goods %} {% if forloop.first %}
             <div class="goods-box flex-box between">
               <div class="flex-box">
                 <div class="selected-thumbnail-box">
-                  <img src="" alt="">
+                  <img src="{% static good.images.url %}" alt="{{ good.title }}">
                 </div>
                 <div class="goods-info-box">
-                  <p>LG 양문형 냉장고 778L</p>
-                  <p class="bold">150,000원</p>
+                  <p>{{ good.title }}</p>
+                  <p class="bold">{{ good.price | intcomma }}</p>
                 </div>
               </div>
+              {% if good.product_sold == 'Y' %}
               <button>거래완료</button>
+              {% elif good.product_reserved == 'Y' %}
+              <button>예약중</button>
+              {% else %}
+              <button>거래전</button>
+              {% endif %}
             </div>
+            {% endif %}{% endfor %}
+            {% endif %}
 
             <!--채팅창 메인-->
-            <div class="chat-container" id="chat-log">
+            <div class="chat-container" id="chat-log" style="{% if not goods %}height: 350px;{% endif %}">
               {% for chat in chat_msgs %}
               {% if request.user.username != chat.username %}
               <div class="message-box from-you">
