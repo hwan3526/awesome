@@ -55,8 +55,6 @@ INSTALLED_APPS = [
 ## 프로젝트명.asgi.application
 ASGI_APPLICATION = "awesome_project.asgi.application"
 
-
-
 ## 채널 - redis 연결 설정
 CHANNEL_LAYERS = {
     "default": {
@@ -169,15 +167,3 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'awesome_app/', STATIC_URL)
 MEDIA_URL = '/'
-
-
-ASGI_APPLICATION = "awesome_project.asgi.application"
-
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
-        },
-    },
-}
