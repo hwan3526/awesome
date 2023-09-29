@@ -199,7 +199,7 @@ hr{
 .chat-container{
     padding: 14px 20px 0px 20px;
 
-    max-height: 280px;
+    height: 280px;
     overflow-y: auto; 
 }
 
