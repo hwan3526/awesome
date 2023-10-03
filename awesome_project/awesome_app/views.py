@@ -198,7 +198,10 @@ def location(request):
         obj = UserProfile(user=User.objects.get(id=request.user.id),activated=True,rating_score=0.0)
         obj.save()
         region = ''
-    return render(request, 'awesome_app/location.html', {"region": region})
+    return render(request,'awesome_app/location.html',{"region": region})
+
+def fix_location(request):
+    return render(request,'awesome_app/fix_location.html')
 
 def set_region(request):
     region = request.POST.get('region-setting')

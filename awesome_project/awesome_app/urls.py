@@ -19,6 +19,7 @@ urlpatterns = [
 
     path('search/', views.search, name='search'),
     path('location/', views.location, name='location'),
+    path('fix_location/', views.fix_location, name='fix_location'),
     path('set_region/', views.set_region, name='set_region'),
     path('set_region_certification/', views.set_region_certification, name='set_region_certification'),
 

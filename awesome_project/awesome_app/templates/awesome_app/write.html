@@ -49,7 +49,8 @@
                 </div>
                 <div class="full-box">
                   <label for="location" class="block-box">거래 희망 장소</label>
-                  <input type="text" name="location" placeholder="거래를 희망하는 장소" required="required" value="{% if post %}{{ post.location }}{% endif %}">
+                  <input type="text" name="location" placeholder="거래를 희망하는 장소" required="required" value="{% if post %}{{ post.location }}{% endif %}" readonly>
+                  <input type="button" value="거래 희망 장소 찾기" onclick="findLocation();" style="cursor: pointer;">
                 </div>
                 <div class="submit-button-box">
                   {% if post %}
@@ -64,6 +65,7 @@
         {% endblock %}
 
         <script type="text/javascript" src="{% static 'js/write.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/location_fix.js' %}"></script>
 
       </body>
 
