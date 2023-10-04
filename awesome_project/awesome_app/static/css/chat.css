@@ -169,7 +169,17 @@ hr{
 
 .goods-box{
     padding: 14px 20px;
-    border-bottom: 1px solid #e2e2e2;;
+    border-bottom: 1px solid #e2e2e2;
+
+}
+
+.goods-scroll-box {
+    overflow-y: auto;
+    max-height: 230px; 
+    position: absolute;
+    background-color: #f1f1f1;
+    width: calc(100%);
+    z-index: 3;
 }
 
 .goods-info-box{
@@ -238,10 +248,15 @@ hr{
     border:1px solid #818181;
     border-radius: 8px;
     justify-content: space-between;
+
+    position: absolute; /* chat-main-container에 대해 상대적인 위치 설정 */
+    bottom: 5px;
+    width: calc(100% - 40px);
 }
 
 .chat-input textarea{
-    width: -webkit-fill-available;
+    width: calc(100% - 70px);
+    /* width: -webkit-fill-available; */
     display: block;
     border: none;
     resize: none;
@@ -330,4 +345,9 @@ a{
 
 .toast-content {
     text-align: center;
+}
+
+.overflow-scroll {
+    overflow-y: auto;
+    max-height: 380px; /* 굿즈 상자의 최대 높이를 설정할 수 있습니다. */
 }
