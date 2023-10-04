@@ -17,7 +17,6 @@
     {% include 'awesome_app/nav.html' %}
     <div class="content-box">
       <div class="container">
-
         {% block content %}
           <div class="about-trade">
             <div class="container">
@@ -45,7 +44,6 @@
                     {% if post %}{{ post.description }}
                     {% endif %}
                   </textarea>
-
                 </div>
                 <div class="full-box">
                   <label for="location" class="block-box">거래 희망 장소</label>
@@ -64,10 +62,10 @@
             </div>
           </div>
         {% endblock %}
+      </div>
+    </div>
+    <script type="text/javascript" src="{% static 'js/write.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/location_fix.js' %}"></script>
+  </body>
 
-        <script type="text/javascript" src="{% static 'js/write.js' %}"></script>
-        <script type="text/javascript" src="{% static 'js/location_fix.js' %}"></script>
-
-      </body>
-
-    </html>
+</html>
