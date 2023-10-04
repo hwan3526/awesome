@@ -458,13 +458,19 @@
         const chatMessage = `관심 상품: ${goodsTitle}, 가격: ${goodsPrice}`;
 
         messageInput.value = chatMessage;
-        e.preventDefault(); // 폼 제출을 막음
+        e.preventDefault();
         document.querySelector('#chat-message-submit').click();
 
       });
     });
+  });
 
-    // ... (기존 코드)
+  document.addEventListener("DOMContentLoaded", function () {
+    const toggleBtn = document.querySelector('#toggle-goods-button');
+    const goodsCount = "{{ goods | length }}";
+    if (goodsCount == 1) {
+      toggleBtn.style.display = 'none';
+    }
   });
 
 </script>
