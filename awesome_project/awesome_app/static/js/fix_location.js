@@ -28,6 +28,18 @@ let currentLocation = undefined;
 
 kakao.maps.event.addListener(map, 'center_changed', function() {
   let latlng = map.getCenter();
+  let coord = new kakao.maps.LatLng(latlng.getLat(), latlng.getLng());
+  
+  marker.setMap(null);
+  marker = new kakao.maps.Marker({
+    position: coord, 
+    image: markerImage
+  });
+  marker.setMap(map);
+});
+
+kakao.maps.event.addListener(map, 'dragend', function() {
+  let latlng = map.getCenter();
 
   getAddr(latlng.getLat(),latlng.getLng());
 });
@@ -59,13 +71,6 @@ function getAddr(lat, lon) {
     }
   };
   geocoder.coord2Address(coord.getLng(), coord.getLat(), callback);
-
-  marker.setMap(null);
-  marker = new kakao.maps.Marker({
-    position: coord, 
-    image: markerImage
-  });
-  marker.setMap(map);
 }
 
 if (navigator.geolocation) {
