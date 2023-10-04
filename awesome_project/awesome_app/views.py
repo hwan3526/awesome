@@ -84,12 +84,17 @@ def trade(request):
     return render(request, 'awesome_app/trade.html', {'posts': top_views_posts})
 
 def find_room_number(request, post):
-    room_number = chat_room.objects.filter(
+    room_number = 0
+    find_room = chat_room.objects.filter(
         (Q(buyer=request.user.id) | Q(seller=request.user.id))
         &
         (Q(buyer=post.user.id) | Q(seller=post.user.id))
     ).first()
-    return room_number.id
+
+    if find_room:
+        room_number = find_room.id
+
+    return room_number
 
 # 중고거래상세정보(각 포스트) 화면
 def trade_post(request, pk):
@@ -109,8 +114,6 @@ def trade_post(request, pk):
         user_profile = None
 
     room_number = find_room_number(request, post)
-    if room_number is None:
-        room_number = 0
 
     context = {
         'post': post,
@@ -202,6 +205,27 @@ def get_rooms(request):
                 'unread_message_count': unread_message_count,
             })
         except chat_messages.DoesNotExist:
+            seller = None
+
+            if room.seller.id == request.user.id:
+                seller = User.objects.get(pk=request.user.id)
+            else:
+                seller = room.seller
+
+            try:
+                seller_location = UserProfile.objects.get(user=seller).region
+            except UserProfile.DoesNotExist:
+                seller_location = '' 
+
+            latest_messages.append({
+                'chat_room_id': room.id,
+                'seller_id': seller.id,
+                'seller': seller.username,
+                'seller_location': '',
+                'message': '',
+                'created_at': '',
+                'unread_message_count': 0,
+            })
             pass
 
     latest_messages.sort(key=lambda x: x['created_at'], reverse=True)
@@ -253,7 +277,9 @@ def current_chat(request, room_number, seller_id):
         'username': '',
         'rating_score': 0.0
     }
+
     seller_profile['username'] = User.objects.get(id=seller_id).username
+
     try:
         profile = UserProfile.objects.get(id=seller_id)
         seller_profile['rating_score'] = profile.rating_score
