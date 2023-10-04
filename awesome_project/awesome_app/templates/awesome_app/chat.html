@@ -111,15 +111,44 @@
                   <p class="bold">{{ good.price | intcomma }}</p>
                 </div>
               </div>
-              {% if good.product_sold == 'Y' %}
-              <button>거래완료</button>
-              {% elif good.product_reserved == 'Y' %}
-              <button>예약중</button>
-              {% else %}
-              <button>거래전</button>
-              {% endif %}
+              <div>
+                <button id="toggle-goods-button">더보기</button>
+                {% if good.product_sold == 'Y' %}
+                <button>거래완료</button>
+                {% elif good.product_reserved == 'Y' %}
+                <button>예약중</button>
+                {% else %}
+                <button>거래전</button>
+                {% endif %}
+              </div>
             </div>
             {% endif %}{% endfor %}
+            <div class="goods-scroll-box">
+              {% for good in goods %}{% if not forloop.first %}
+              <div class="goods-box flex-box between {% if forloop.counter > 4 %}hidden{% endif %}"
+                style="{% if forloop.counter > 1 %}display: none;{% endif %}">
+                <div class="flex-box">
+                  <div class="selected-thumbnail-box">
+                    <img src="{% static good.images.url %}" alt="{{ good.title }}">
+                  </div>
+                  <div class="goods-info-box">
+                    <p>{{ good.title }}</p>
+                    <p class="bold">{{ good.price | intcomma }}</p>
+                  </div>
+                </div>
+                <div>
+                  <button class="sendChat" id="{{ good.id }}">채팅보내기</button>
+                  {% if good.product_sold == 'Y' %}
+                  <button>거래완료</button>
+                  {% elif good.product_reserved == 'Y' %}
+                  <button>예약중</button>
+                  {% else %}
+                  <button>거래전</button>
+                  {% endif %}
+                </div>
+              </div>
+              {% endif %}{% endfor %}
+            </div>
             {% endif %}
 
             <!--채팅창 메인-->
@@ -380,6 +409,62 @@
       }
     });
 
+  });
+
+
+  document.addEventListener("DOMContentLoaded", function () {
+    let isGoodsExpanded = false;
+    const toggleGoodsButton = document.querySelector('#toggle-goods-button');
+    const goodsBoxes = document.querySelectorAll('.goods-box');
+
+    toggleGoodsButton.addEventListener('click', function () {
+      if (isGoodsExpanded) {
+        // 첫 번째 굿즈 외의 굿즈를 숨김
+        for (let i = 1; i < goodsBoxes.length; i++) {
+          goodsBoxes[i].classList.add('hidden');
+          goodsBoxes[i].style.display = 'none';
+        }
+      } else {
+        // 모든 굿즈를 보이도록 설정
+        for (let i = 1; i < goodsBoxes.length; i++) {
+          if (i >= 4) {
+            goodsBoxes[i].classList.remove('hidden');
+            goodsBoxes[i].classList.add('overflow-scroll');
+            goodsBoxes[i].style.display = 'flex';
+          } else {
+            goodsBoxes[i].classList.remove('hidden');
+            goodsBoxes[i].classList.add('overflow-scroll');
+            goodsBoxes[i].style.display = 'flex';
+          }
+        }
+      }
+
+      // 첫 번째 굿즈만 보이도록 설정
+      goodsBoxes[0].classList.remove('hidden');
+      isGoodsExpanded = !isGoodsExpanded;
+    });
+  });
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const sendChatButtons = document.querySelectorAll('.sendChat');
+
+    sendChatButtons.forEach(button => {
+      button.addEventListener('click', function (e) {
+        const goodsBox = button.closest('.goods-box');
+        const goodsTitle = goodsBox.querySelector('.goods-info-box p').textContent;
+        const goodsPrice = goodsBox.querySelector('.goods-info-box .bold').textContent;
+        const messageInput = document.querySelector('#chat-message-input');
+
+        const chatMessage = `관심 상품: ${goodsTitle}, 가격: ${goodsPrice}`;
+
+        messageInput.value = chatMessage;
+        e.preventDefault(); // 폼 제출을 막음
+        document.querySelector('#chat-message-submit').click();
+
+      });
+    });
+
+    // ... (기존 코드)
   });
 
 </script>
