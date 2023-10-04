@@ -82,7 +82,7 @@
         <!-- 채팅창-->
         <div class="chat-main-container">
 
-          {% if chat_msgs %}
+          {% if room_number > 0 %}
           <div style="height:500px">
             <div class="contact-info flex-box">
               {% if seller %}
@@ -142,7 +142,7 @@
                 {% if chat.is_read %}
                 <p class="s-text">읽음</p>
                 {% else %}
-                <p class="s-text">읽지 않음</p>
+                <p class="s-text unread-from-you">읽지 않음</p>
                 {% endif %}
                 <p class="s-text">{{ chat.created_at }}</p>
                 <div class="message-text">{{ chat.message }}</div>
@@ -168,7 +168,7 @@
             <div><button id="chat-message-submit" type="button">전송</button></div>
           </form>
 
-          {% else %}
+          {% elif room_number == 0 %}
           <div class="awesome_logo">
             <img src="{% static 'img/awesome_logo.png' %}">
           </div>
@@ -190,6 +190,7 @@
     const room_number = parseInt("{{ room_number }}");
 
     const ws = new WebSocket('ws://127.0.0.1:8000/ws/chat/' + room_number + '/');
+    // const readCheckerSocket = new WebSocket('ws://127.0.0.1:8000/ws/chat/read' + room_number + '/');
 
     function getCurrentTime() {
       const now = new Date();
@@ -228,14 +229,15 @@
       if (currentUser === username) {
         messageContainer.className = 'message-box from-me';
         messageContainer.innerHTML = `
-            <p class="s-text">${data.created_at}</p>
-            <div class="message-text">${data.message}</div>
+          <p class="s-text unread-from-you">읽지 않음</p>
+          <p class="s-text">${data.created_at}</p>
+          <div class="message-text">${data.message}</div>
         `;
       } else {
         messageContainer.className = 'message-box from-you';
         messageContainer.innerHTML = `
-            <div class="message-text">${data.message}</div>
-            <p class="s-text">${data.created_at}</p>
+          <div class="message-text">${data.message}</div>
+          <p class="s-text">${data.created_at}</p>
         `;
 
         const messageText = data.message.length > 10 ? data.message.slice(0, 10) + '...' : data.message;
@@ -252,6 +254,13 @@
 
       if (isScrolledToBottom()) {
         scrollToBottom();
+
+        // readCheckerSocket.send(JSON.stringify({
+        //   'sendUser': username,
+        //   'room_number': room_number,
+        //   'chat_uuid': generateMessageId()
+        // }));
+
       }
     };
 
@@ -259,7 +268,6 @@
       const scrollThreshold = 54;
       return chatLog.scrollHeight - chatLog.scrollTop <= chatLog.clientHeight + scrollThreshold;
     }
-
 
     function scrollToBottom() {
       chatLog.scrollTop = chatLog.scrollHeight;
@@ -283,6 +291,32 @@
     function generateMessageId() {
       return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
     }
+
+    window.addEventListener('focus', function () {
+      if (isScrolledToBottom(chatLog)) {
+        // readCheckerSocket.send(JSON.stringify({
+        //   'message_id': messageId,
+        //   'is_read': true
+        // }));
+      }
+    });
+
+    // readCheckerSocket.onmessage = function (e) {
+    //   const data = JSON.parse(e.data);
+    //   const fromMe = document.querySelector('.from-me');
+    //   let unReadFromYou = fromMe.querySelector('.unread-from-you');
+
+    //   const readUser = data.readUser;
+    //   const is_read = data.is_read;
+    //   const loginUser = "{{ request.username }}";
+
+    //   if (loginUser !== readUser) {
+    //     if (is_read) {
+    //       unreadElement.textContent = '읽음';
+    //     }
+    //   }
+
+    // };
 
     document.querySelector('#chat-message-input').addEventListener('keydown', function (e) {
       if (e.keyCode === 13) {  // enter, return
