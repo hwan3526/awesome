@@ -142,7 +142,7 @@
                 {% if chat.is_read %}
                 <p class="s-text">읽음</p>
                 {% else %}
-                <p class="s-text unread-from-you">읽지 않음</p>
+                <p class="s-text unread-message">읽지 않음</p>
                 {% endif %}
                 <p class="s-text">{{ chat.created_at }}</p>
                 <div class="message-text">{{ chat.message }}</div>
@@ -181,16 +181,20 @@
   {% include 'awesome_app/footer.html' %}
 
 </body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/uuid/8.3.2/uuid.min.js"></script>
 <script>
+  const chatLog = document.querySelector('#chat-log');
+  const room_number = parseInt("{{ room_number }}");
+  const ws = new WebSocket('ws://127.0.0.1:8000/ws/chat/' + room_number + '/');
+
+  function generateMessageId() {
+    return uuid.v4();
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
-    const chatLog = document.querySelector('#chat-log');
     const messageInputDom = document.querySelector('#chat-message-input');
     const chatMessageSubmitBtn = document.querySelector('#chat-message-submit');
     const username = "{{ user.username }}";
-    const room_number = parseInt("{{ room_number }}");
-
-    const ws = new WebSocket('ws://127.0.0.1:8000/ws/chat/' + room_number + '/');
-    // const readCheckerSocket = new WebSocket('ws://127.0.0.1:8000/ws/chat/read' + room_number + '/');
 
     function getCurrentTime() {
       const now = new Date();
@@ -221,52 +225,51 @@
 
     ws.onmessage = function (e) {
       const data = JSON.parse(e.data);
-      const messageContainer = document.createElement('div');
 
-      const currentUser = data.username;
-      const messageId = data.message_id;
+      if (data.type === 'chat_message') {
 
-      if (currentUser === username) {
-        messageContainer.className = 'message-box from-me';
-        messageContainer.innerHTML = `
-          <p class="s-text unread-from-you">읽지 않음</p>
-          <p class="s-text">${data.created_at}</p>
-          <div class="message-text">${data.message}</div>
-        `;
-      } else {
-        messageContainer.className = 'message-box from-you';
-        messageContainer.innerHTML = `
-          <div class="message-text">${data.message}</div>
-          <p class="s-text">${data.created_at}</p>
-        `;
+        const messageContainer = document.createElement('div');
 
-        const messageText = data.message.length > 10 ? data.message.slice(0, 10) + '...' : data.message;
+        const currentUser = data.username;
+        const messageId = data.message_id;
 
-        if (!isScrolledToBottom()) {
-          showNewMessagePopup(messageText);
+        if (currentUser === username) {
+          messageContainer.className = 'message-box from-me';
+          messageContainer.innerHTML = `
+            <p class="s-text unread-message">읽지 않음</p>
+            <p class="s-text">${data.created_at}</p>
+            <div class="message-text">${data.message}</div>
+          `;
+        } else {
+          messageContainer.className = 'message-box from-you';
+          messageContainer.innerHTML = `
+            <div class="message-text">${data.message}</div>
+            <p class="s-text">${data.created_at}</p>
+          `;
+
+          const messageText = data.message.length > 10 ? data.message.slice(0, 10) + '...' : data.message;
+
+          if (!isScrolledToBottom()) {
+            showNewMessagePopup(messageText);
+          }
         }
+        chatLog.appendChild(messageContainer);
+
+        if (currentUser == username) {
+          scrollToBottom();
+        }
+
+        if (isScrolledToBottom()) {
+          scrollToBottom();
+        }
+      };
+
+      if (data.type === 'chat_message_read') {
+        let unreadMessages = document.querySelectorAll('.unread-message');
+        unreadMessages.forEach(message => {
+          message.textContent = '읽음';
+        });
       }
-      chatLog.appendChild(messageContainer);
-
-      if (currentUser == username) {
-        scrollToBottom();
-      }
-
-      if (isScrolledToBottom()) {
-        scrollToBottom();
-
-        // readCheckerSocket.send(JSON.stringify({
-        //   'sendUser': username,
-        //   'room_number': room_number,
-        //   'chat_uuid': generateMessageId()
-        // }));
-
-      }
-    };
-
-    function isScrolledToBottom() {
-      const scrollThreshold = 54;
-      return chatLog.scrollHeight - chatLog.scrollTop <= chatLog.clientHeight + scrollThreshold;
     }
 
     function scrollToBottom() {
@@ -275,48 +278,24 @@
 
     chatMessageSubmitBtn.addEventListener('click', function () {
       const message = messageInputDom.value;
+
       if (message.trim() !== '') { // 빈 메시지는 추가하지 않음
 
+        let uuid = generateMessageId();
+
         ws.send(JSON.stringify({
+          'type': 'chat_message',
           'message': message,
           'username': username,
+          'receiver': "{{ seller.username }}",
           'room_number': room_number,
-          'created_at': currentTime
+          'created_at': currentTime,
+          'chat_uuid': uuid
         }));
 
         messageInputDom.value = '';
       };
     });
-
-    function generateMessageId() {
-      return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-    }
-
-    window.addEventListener('focus', function () {
-      if (isScrolledToBottom(chatLog)) {
-        // readCheckerSocket.send(JSON.stringify({
-        //   'message_id': messageId,
-        //   'is_read': true
-        // }));
-      }
-    });
-
-    // readCheckerSocket.onmessage = function (e) {
-    //   const data = JSON.parse(e.data);
-    //   const fromMe = document.querySelector('.from-me');
-    //   let unReadFromYou = fromMe.querySelector('.unread-from-you');
-
-    //   const readUser = data.readUser;
-    //   const is_read = data.is_read;
-    //   const loginUser = "{{ request.username }}";
-
-    //   if (loginUser !== readUser) {
-    //     if (is_read) {
-    //       unreadElement.textContent = '읽음';
-    //     }
-    //   }
-
-    // };
 
     document.querySelector('#chat-message-input').addEventListener('keydown', function (e) {
       if (e.keyCode === 13) {  // enter, return
@@ -341,6 +320,25 @@
     window.location.href = `/chat/${chatRoomId}/${senderId}`;
   }
 
+  function isScrolledToBottom() {
+    const scrollThreshold = 54;
+    return chatLog.scrollHeight - chatLog.scrollTop <= chatLog.clientHeight + scrollThreshold;
+  }
+
+  window.addEventListener('focus', function () {
+    if (isScrolledToBottom(chatLog)) {
+      const room_number = parseInt("{{ room_number }}");
+
+      ws.send(JSON.stringify({
+        'type': 'chat_message_read',
+        'receiver': "{{ request.user.username }}",
+        'room_number': room_number,
+        'chat_uuid': generateMessageId(),
+        'is_read': true
+      }));
+    }
+  });
+
   document.addEventListener("DOMContentLoaded", function () {
     window.addEventListener('load', function () {
       const currentUrl = window.location.href;
@@ -357,7 +355,6 @@
       }
 
       const firstUnreadIndex = "{{ first_unread_index }}";
-      const chatLog = document.getElementById('chat-log');
 
       if (firstUnreadIndex > 0) {
         const unreadChat = chatLog.querySelectorAll('.unread')[0];
