@@ -78,7 +78,7 @@ def trade(request):
     top_views_posts = Post.objects.filter(product_sold='N').order_by('-view_num')
 
     for post in top_views_posts:
-        chats = chat_room.objects.filter(goods=post, seller=post.user)
+        chats = chat_room.objects.filter(seller=post.user)
         post.chat_num = len(chats)
         post.save()
 
