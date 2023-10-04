@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
+import uuid
 
 class user_profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')    
@@ -145,7 +146,10 @@ class chat_room(models.Model):
 
 class chat_messages(models.Model):  
     chat_room = models.ForeignKey(chat_room, on_delete=models.CASCADE)
-    sender = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name='sender')
+    receiver = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name='receiver')
     message = models.CharField(max_length=500)
     read_or_not = models.BooleanField()
     created_at = models.DateTimeField(auto_now_add=True)
+    chat_uuid = models.UUIDField(editable=False, unique=True, null=True)
+
