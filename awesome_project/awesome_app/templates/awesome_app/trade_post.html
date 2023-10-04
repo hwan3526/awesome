@@ -55,10 +55,15 @@
               </div>
               <p>{{ post.description }}</p>
               <div class="location-views-box flex-box between">
-                <p>희망 거래장소 |
+                <p id="fix-location">희망 거래장소 |
                   {{ post.location }}</p>
                 <p>조회수
                   {{ post.view_num }}</p>
+              </div>
+              <div class="button-box">
+                <a id="pathfinder" href="" target="_blank">
+                  <button id="pathfinder-button" class="orange">길찾기</button>
+                </a>
               </div>
             </div>
           {% endblock %}
@@ -67,6 +72,9 @@
     </div>
     {% include 'awesome_app/footer.html' %}
 
+    <!--카카오 api key-->
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=06b71a5db40aca812f7ae8bff82d58b9&libraries=services"></script>
+    <script type="text/javascript" src="{% static 'js/trade_post.js' %}"></script>
   </body>
 
 </html>

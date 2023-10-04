@@ -91,15 +91,14 @@ if (navigator.geolocation) {
   map.setCenter(locPosition);
 }
 
-opener.document.getElementById("region-warn").style.display = "none";
-opener.document.getElementById("region-warn").style.color = "red";
-opener.document.getElementById("region-warn").style.fontWeight = "bold";
-opener.document.getElementById("region-warn").style.textAlign = "center";
-opener.document.getElementById("region-warn").style.marginBottom = "8px";
-opener.document.getElementById("region-warn").innerText = "!!인증하신 동네와 다른 동네입니다!!";
-
 function fixLocation(){
   opener.document.getElementsByName("location")[0].value = currentLocation;
+  opener.document.getElementById("region-warn").style.color = "red";
+  opener.document.getElementById("region-warn").style.fontWeight = "bold";
+  opener.document.getElementById("region-warn").style.textAlign = "center";
+  opener.document.getElementById("region-warn").style.marginBottom = "8px";
+  opener.document.getElementById("region-warn").innerText = "!!인증하신 동네와 다른 동네입니다!!";
+  
   if (document.getElementById("region-warn").style.display == "block"){
     opener.document.getElementById("region-warn").style.display = "block";
   } else {
