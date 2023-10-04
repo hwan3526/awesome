@@ -50,6 +50,7 @@
                 <div class="full-box">
                   <label for="location" class="block-box">거래 희망 장소</label>
                   <input type="text" name="location" placeholder="거래를 희망하는 장소" required="required" value="{% if post %}{{ post.location }}{% endif %}" readonly>
+                  <h5 id="region-warn"></h5>
                   <input type="button" value="거래 희망 장소 찾기" onclick="findLocation();" style="cursor: pointer;">
                 </div>
                 <div class="submit-button-box">

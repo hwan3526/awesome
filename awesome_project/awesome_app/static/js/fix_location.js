@@ -1,5 +1,10 @@
-document.getElementById("header").style.width = "80%"
-document.getElementById("content").style.width = "80%"
+document.getElementById("header").style.width = "80%";
+document.getElementById("content").style.width = "80%";
+document.getElementById("region-certified").style.display = "none";
+document.getElementById("region-warn").style.display = "none";
+document.getElementById("region-warn").style.color = "red";
+document.getElementById("region-warn").style.fontWeight = "bold";
+document.getElementById("region-warn").innerText = "!!인증하신 동네와 다른 동네입니다!!";
 
 let mapContainer = document.getElementById("map"),
   mapOption = {
@@ -24,7 +29,7 @@ let currentLocation = undefined;
 kakao.maps.event.addListener(map, 'center_changed', function() {
   let latlng = map.getCenter();
 
-  getAddr(latlng.getLat(),latlng.getLng())
+  getAddr(latlng.getLat(),latlng.getLng());
 });
 
 function getAddr(lat, lon) {
@@ -37,10 +42,24 @@ function getAddr(lat, lon) {
       currentLocation = result[0].address.address_name;
 
       document.getElementById("region-info").innerText =
-        "지정하신 거래 희망 장소는 " + currentLocation + "입니다.";
+        "지정하신 거래 희망 장소는 " + currentLocation + " 입니다.";
+
+      let regionCertifiedValue = document.getElementById('region-certified').innerText;
+      let regionArray = regionCertifiedValue.split(" ");
+      let lastRegionPart = regionArray[regionArray.length - 1];
+
+      let currentLocationArray = currentLocation.split(" ");
+      let regionWarn = document.getElementById("region-warn");
+
+      if (currentLocationArray.includes(lastRegionPart)) {
+        regionWarn.style.display = "none";
+      } else {
+        regionWarn.style.display = "block";
+      }
     }
   };
   geocoder.coord2Address(coord.getLng(), coord.getLat(), callback);
+
   marker.setMap(null);
   marker = new kakao.maps.Marker({
     position: coord, 
@@ -67,9 +86,19 @@ if (navigator.geolocation) {
   map.setCenter(locPosition);
 }
 
-let 
+opener.document.getElementById("region-warn").style.display = "none";
+opener.document.getElementById("region-warn").style.color = "red";
+opener.document.getElementById("region-warn").style.fontWeight = "bold";
+opener.document.getElementById("region-warn").style.textAlign = "center";
+opener.document.getElementById("region-warn").style.marginBottom = "8px";
+opener.document.getElementById("region-warn").innerText = "!!인증하신 동네와 다른 동네입니다!!";
 
 function fixLocation(){
-  opener.document.getElementsByName("location")[0].value = currentLocation
+  opener.document.getElementsByName("location")[0].value = currentLocation;
+  if (document.getElementById("region-warn").style.display == "block"){
+    opener.document.getElementById("region-warn").style.display = "block";
+  } else {
+    opener.document.getElementById("region-warn").style.display = "none";
+  }
   window.close();
 }
