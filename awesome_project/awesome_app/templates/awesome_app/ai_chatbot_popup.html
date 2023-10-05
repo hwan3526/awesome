@@ -38,10 +38,11 @@
         </div>
     </div>
 
-    <form class="chat-input" id="chat-form">
+    <form class="chat-input" id="chat-form" style="display: none;">
         {%csrf_token%}
         <textarea id="chat-message-input" name="message" cols="30" rows="10"
         placeholder="" readonly></textarea>
+        <button id="chat-message-submit" type="submit">send</button>
     </form>
 
 </div>
