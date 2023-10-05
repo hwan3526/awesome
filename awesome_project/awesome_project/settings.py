@@ -28,9 +28,9 @@ SECRET_KEY = secrets['SECRET_KEY']
 API_KEY = secrets['API_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost']
 
 
 # Application definition
@@ -167,3 +167,22 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'awesome_app/', STATIC_URL)
 MEDIA_URL = '/'
+
+
+
+
+CHATTERBOT = {
+    'name': 'MyBot',
+    'storage_adapter': 'chatterbot.storage.SQLStorageAdapter',
+    
+    'logic_adapters': [
+        {
+            'import_path':'chatterbot.logic.BestMatch'
+        },
+    ],
+    'database_uri': f"postgresql://{secrets['USER']}:{secrets['PASSWORD']}@{secrets['HOST']}:5432/{secrets['NAME']}",
+    'trainer': 'chatterbot.trainers.ChatterBotTrainer',
+    'training_data': [
+        'awesome_project/awesome_project/chatbot_data.yml',  # 여기에 YML 파일 경로를 추가
+    ],
+}
