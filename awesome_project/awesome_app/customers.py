@@ -1,8 +1,10 @@
+import asyncio
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from .models import chat_messages, chat_room
 from django.contrib.auth.models import User
 from channels.db import database_sync_to_async
+from .views import autocomplete
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -89,6 +91,27 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 }
             )
 
+        if text_data_json['type'] == 'chat_bot':
+            message = text_data_json['message']
+            created_at = text_data_json["created_at"]
+
+            response_generator = autocomplete(message)
+            for response in response_generator:
+                try:
+                    response_str = response.decode('utf-8')
+                    response_data = json.loads(response_str)
+                    message_content = response_data['message']
+                    
+                    await self.channel_layer.group_send(
+                        self.room_group_name, {
+                            "type": "chat_bot_send",
+                            "message": message_content,
+                            'created_at': created_at
+                        }
+                    )
+                except Exception as e:
+                    print(e)
+
     # Receive message from room group
     async def chat_message(self, event):
         message = event["message"]
@@ -115,4 +138,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'room_number': event['room_number'],
             "receiver": event["receiver"],
             "is_read": True
+        }))
+
+    async def chat_bot_send(self, event):
+        await self.send(text_data=json.dumps({
+            'type': 'chat_bot_send',
+            'message': event['message'],
+            'created_at': event['created_at']
         }))

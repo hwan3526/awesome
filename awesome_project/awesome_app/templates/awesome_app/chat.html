@@ -24,20 +24,6 @@
 
         <!-- 채팅선택창 -->
         <div class="chat-select-container">
-          <div class="flex-box">
-
-            <!-- 아이디및 체크박스 -->
-            <div class="id-box flex-box between">
-              <span id="username">{{ username }}</span>
-              <div>
-                <label>
-                  안읽은 메세지만 보기
-                  <input type="checkbox" name="" id="">
-                </label>
-              </div>
-            </div>
-          </div>
-
           <!-- 채팅 리스트 -->
           <div class="chat-list-box flex-box column">
             <!-- 봇 -->
@@ -50,6 +36,17 @@
                 <p class="chat-thumb-text">궁금한 내용을 물어보세요!</p>
               </div>
             </div>
+
+            <div class="chat-box flex-box chatBotAi" onclick="chatWithAi(-1)" data-chat-room-id="-1">
+              <div class="ai-profile">
+                <img src="{% static 'img/awesome_logo.png'%}" alt="">
+              </div>
+              <div>
+                <p class="bold">대화형 AI 챗봇</p>
+                <p class="chat-thumb-text">궁금한 내용을 물어보세요!</p>
+              </div>
+            </div>
+
             <!-- 채팅방리스트 -->
             {% for msg in latest_messages %}
 
@@ -82,7 +79,7 @@
         <!-- 채팅창-->
         <div class="chat-main-container">
 
-          {% if room_number > 0 %}
+          {% if room_number > 0 or room_number == -1 %}
           <div style="height:500px">
             <div class="contact-info flex-box">
               {% if seller %}
@@ -213,8 +210,13 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/uuid/8.3.2/uuid.min.js"></script>
 <script>
   const chatLog = document.querySelector('#chat-log');
-  const room_number = parseInt("{{ room_number }}");
-  const ws = new WebSocket('ws://127.0.0.1:8000/ws/chat/' + room_number + '/');
+  let room_number = parseInt("{{ room_number }}");
+  let change_room_number = parseInt("{{ room_number }}");
+  if (change_room_number == -1) {
+    change_room_number = 0;
+  }
+
+  const ws = new WebSocket('ws://127.0.0.1:8000/ws/chat/' + change_room_number + '/');
 
   function generateMessageId() {
     return uuid.v4();
@@ -299,40 +301,92 @@
           message.textContent = '읽음';
         });
       }
+
+      if (data.type === 'chat_bot_send') {
+        const loadingMessage = document.querySelectorAll('.loading-message');
+
+        // loadingMessage.style.display = 'none';
+        loadingMessage.forEach(element => {
+          element.remove(); // 각 요소를 삭제합니다.
+        });
+
+        const messageContainer = document.createElement('div');
+
+        const currentUser = 'chatbot';
+
+        messageContainer.className = 'message-box from-you';
+        messageContainer.innerHTML = `
+            <div class="message-text">${data.message}</div>
+            <p class="s-text">${data.created_at}</p>
+          `;
+
+        chatLog.appendChild(messageContainer);
+        scrollToBottom();
+      }
     }
 
     function scrollToBottom() {
       chatLog.scrollTop = chatLog.scrollHeight;
     }
 
-    chatMessageSubmitBtn.addEventListener('click', function () {
-      const message = messageInputDom.value;
+    if (room_number > 0 || room_number == -1) {
+      chatMessageSubmitBtn.addEventListener('click', function () {
+        const message = messageInputDom.value;
 
-      if (message.trim() !== '') { // 빈 메시지는 추가하지 않음
+        if (message.trim() !== '') { // 빈 메시지는 추가하지 않음
 
-        let uuid = generateMessageId();
+          let uuid = generateMessageId();
+          if (room_number > 0) {
+            ws.send(JSON.stringify({
+              'type': 'chat_message',
+              'message': message,
+              'username': username,
+              'receiver': "{{ seller.username }}",
+              'room_number': room_number,
+              'created_at': currentTime,
+              'chat_uuid': uuid
+            }));
+          } else if (room_number == -1) {
+            const messageContainer = document.createElement('div');
+            messageContainer.className = 'message-box from-me';
+            messageContainer.innerHTML = `
+              <p class="s-text">${currentTime}</p>
+              <div class="message-text">${message}</div>
+            `;
+            chatLog.appendChild(messageContainer);
 
-        ws.send(JSON.stringify({
-          'type': 'chat_message',
-          'message': message,
-          'username': username,
-          'receiver': "{{ seller.username }}",
-          'room_number': room_number,
-          'created_at': currentTime,
-          'chat_uuid': uuid
-        }));
+            ws.send(JSON.stringify({
+              'type': 'chat_bot',
+              'message': message,
+              'created_at': currentTime
+            }));
 
-        messageInputDom.value = '';
-      };
-    });
+            let second = document.createElement('div');
+            second.className = 'message-box from-you';
+            second.innerHTML = `
+              <p class="message-text loading-message"">
+                생각 중...
+              </p>
+            `;
 
-    document.querySelector('#chat-message-input').addEventListener('keydown', function (e) {
-      if (e.keyCode === 13) {  // enter, return
-        e.preventDefault(); // 폼 제출을 막음
-        document.querySelector('#chat-message-submit').click();
-      }
-    });
+            chatLog.appendChild(second);
+            const loadingMessage = document.getElementById('loading-message');
+            scrollToBottom();
+          }
 
+          messageInputDom.value = '';
+
+        };
+      });
+
+      document.querySelector('#chat-message-input').addEventListener('keydown', function (e) {
+        if (e.keyCode === 13) {  // enter, return
+          e.preventDefault(); // 폼 제출을 막음
+          document.querySelector('#chat-message-submit').click();
+        }
+      });
+
+    }
   });
 
   function redirectToChat(chatRoomId, senderId) {
@@ -358,13 +412,15 @@
     if (isScrolledToBottom(chatLog)) {
       const room_number = parseInt("{{ room_number }}");
 
-      ws.send(JSON.stringify({
-        'type': 'chat_message_read',
-        'receiver': "{{ request.user.username }}",
-        'room_number': room_number,
-        'chat_uuid': generateMessageId(),
-        'is_read': true
-      }));
+      if (room_number > 0) {
+        ws.send(JSON.stringify({
+          'type': 'chat_message_read',
+          'receiver': "{{ request.user.username }}",
+          'room_number': room_number,
+          'chat_uuid': generateMessageId(),
+          'is_read': true
+        }));
+      }
     }
   });
 
@@ -393,7 +449,9 @@
           chatLog.scrollTop = chatLog.scrollHeight;
         }
       } else {
-        chatLog.scrollTop = chatLog.scrollHeight;
+        if (chatLog) {
+          chatLog.scrollTop = chatLog.scrollHeight;
+        }
       }
     });
 
@@ -417,32 +475,34 @@
     const toggleGoodsButton = document.querySelector('#toggle-goods-button');
     const goodsBoxes = document.querySelectorAll('.goods-box');
 
-    toggleGoodsButton.addEventListener('click', function () {
-      if (isGoodsExpanded) {
-        // 첫 번째 굿즈 외의 굿즈를 숨김
-        for (let i = 1; i < goodsBoxes.length; i++) {
-          goodsBoxes[i].classList.add('hidden');
-          goodsBoxes[i].style.display = 'none';
-        }
-      } else {
-        // 모든 굿즈를 보이도록 설정
-        for (let i = 1; i < goodsBoxes.length; i++) {
-          if (i >= 4) {
-            goodsBoxes[i].classList.remove('hidden');
-            goodsBoxes[i].classList.add('overflow-scroll');
-            goodsBoxes[i].style.display = 'flex';
-          } else {
-            goodsBoxes[i].classList.remove('hidden');
-            goodsBoxes[i].classList.add('overflow-scroll');
-            goodsBoxes[i].style.display = 'flex';
+    if (goodsBoxes.length > 0) {
+      toggleGoodsButton.addEventListener('click', function () {
+        if (isGoodsExpanded) {
+          // 첫 번째 굿즈 외의 굿즈를 숨김
+          for (let i = 1; i < goodsBoxes.length; i++) {
+            goodsBoxes[i].classList.add('hidden');
+            goodsBoxes[i].style.display = 'none';
+          }
+        } else {
+          // 모든 굿즈를 보이도록 설정
+          for (let i = 1; i < goodsBoxes.length; i++) {
+            if (i >= 4) {
+              goodsBoxes[i].classList.remove('hidden');
+              goodsBoxes[i].classList.add('overflow-scroll');
+              goodsBoxes[i].style.display = 'flex';
+            } else {
+              goodsBoxes[i].classList.remove('hidden');
+              goodsBoxes[i].classList.add('overflow-scroll');
+              goodsBoxes[i].style.display = 'flex';
+            }
           }
         }
-      }
 
-      // 첫 번째 굿즈만 보이도록 설정
-      goodsBoxes[0].classList.remove('hidden');
-      isGoodsExpanded = !isGoodsExpanded;
-    });
+        goodsBoxes[0].classList.remove('hidden');
+        isGoodsExpanded = !isGoodsExpanded;
+      });
+
+    }
   });
 
   document.addEventListener("DOMContentLoaded", function () {
@@ -471,6 +531,26 @@
     if (goodsCount == 1) {
       toggleBtn.style.display = 'none';
     }
+  });
+
+  function chatWithAi(chatRoomId) {
+    const chatBotAi = document.querySelector('.chatBotAi');
+    chatBotAi.classList.add('selected-chat');
+
+    window.location.href = `/chat_with_ai`;
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const currentUrl = window.location.href;
+    const chatBotAi = document.querySelector('.chatBotAi');
+
+    if (currentUrl.includes('chat_with_ai')) {
+      chatBotAi.classList.add('selected-chat');
+    } else {
+      chatBotAi.classList.remove('selected-chat');
+    }
+
+
   });
 
 </script>
