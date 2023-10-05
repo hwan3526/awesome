@@ -120,6 +120,10 @@ hr{
     border-bottom: 1px solid #e2e2e2;
 }
 
+.chat-box:hover {
+    cursor: pointer;
+}
+
 .ai-profile{
     width: 48px;
     height: 48px;
