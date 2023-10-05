@@ -107,7 +107,7 @@ a {
   position: fixed;
   bottom: 40px;
   right: 40px;
-  background-color: #ff6f0e; 
+  background-color: #B22222; 
   border-radius: 50%;
   width: 80px; 
   height: 80px; 
@@ -124,7 +124,7 @@ a {
   color: #fff;
 }
 .floating-button:hover {
-  background-color: #ff8534; 
+  background-color: #B22222; 
   cursor: pointer;
 }
 .search-box{
@@ -208,7 +208,7 @@ a {
   position: fixed;
   bottom: 40px;
   right: 40px;
-  background-color: #ff6f0e; 
+  background-color: #B22222; 
   border-radius: 50%;
   width: 80px; 
   height: 80px; 
@@ -226,7 +226,7 @@ a {
   color: #fff;
 }
 .floating-button:hover {
-  background-color: #ff8534; 
+  background-color: #B22222; 
   cursor: pointer;
 }
 

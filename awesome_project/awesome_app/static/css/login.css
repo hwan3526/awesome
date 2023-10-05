@@ -11,7 +11,7 @@
 .login-input{
     width: -webkit-fill-available;
     background-color: #fff;
-    border: 1px solid #fa6616;
+    border: 1px solid #B22222;
     border-radius: 100px;
     padding: 13px;
 }
@@ -30,7 +30,7 @@
 
 .login-button{
     width: 100%;
-    background-color: #fa6616;
+    background-color: #B22222;
     border-radius: 100px;
     padding: 13px;
     border: none;
@@ -46,7 +46,7 @@
 }
 
 button:hover{
-    background-color: #ff823f;
+    background-color: #B22222;
 }
 
 .register-reco{
@@ -57,6 +57,6 @@ button:hover{
 
 .register-reco a{
     text-decoration: none;
-    color: #ff823f;
+    color: #B22222;
     cursor: pointer;
 }
