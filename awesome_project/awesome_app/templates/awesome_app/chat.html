@@ -68,9 +68,11 @@
                   {% endif %}
                 </div>
               </div>
+              {% if msg.goods_img != None %}
               <div class="thumbnail-box">
-                <img src="" alt="">
+                <img src="{% static msg.goods_img.images.url %}" alt="">
               </div>
+              {% endif %}
 
             </div>
 
@@ -324,11 +326,6 @@
         scrollToBottom();
       }
     }
-
-    ws.onclose= function(e){
-      console.log(e);
-              console.error('웹 소켓이 닫혔습니다');
-           };
 
     function scrollToBottom() {
       chatLog.scrollTop = chatLog.scrollHeight;
