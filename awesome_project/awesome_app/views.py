@@ -4,11 +4,13 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+
+from django.conf import settings
 from .models import goods as Post, user_profile as UserProfile, chat_room, chat_messages
 from .forms import CustomRegistrationForm, CustomLoginForm, PostForm
 from django.db.models import Q
 from django.utils import timezone
-
+import openai
 
 def index(request):
     return render(request, 'awesome_app/main.html')
@@ -299,6 +301,22 @@ def current_chat(request, room_number, seller_id):
     return render(request, 'awesome_app/chat.html', context)
 
 @login_required
+def chat_with_ai(request):
+
+    chat_bot = User.objects.get(username='chatbot')
+
+    context = {
+        "room_number" : -1,
+        "chat_msgs" : [],
+        "latest_messages" : get_rooms(request),
+        'first_unread_index': 0,
+        'goods': [],
+        'seller': chat_bot
+    }
+
+    return render(request, 'awesome_app/chat.html', context)
+
+@login_required
 def chat_msg(request, room_number):
     room = get_object_or_404(chat_room, pk=room_number)
 
@@ -358,8 +376,23 @@ def set_region_certification(request):
     user_profile.save()
     return redirect('awesome_app:alert',alert_message='동네 인증이 완료되었습니다.')
 
-# @login_required
-# def chat(request, room_name, username):
-#     users = User.objects.get(username=username)
-#     # room_num = User.objects.get(room_name=room_name)
-#     return render(request, 'awesome_app/chat.html', {'room_name': room_name, 'username':users})
+
+def autocomplete(prompt):        
+    try:
+        api_key = settings.API_KEY
+
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": f"'{prompt}'에 대한 답변을 해주세요. 200자 이내로만 작성하고 문장은 완성형으로 답변 해주세요."},
+            ],
+            max_tokens=400,
+            n=1,
+            api_key=api_key
+        )
+        # 반환된 응답에서 텍스트 추출해 변수에 저장
+        message = response['choices'][0]['message']['content']
+    except Exception as e:
+        message = str(e)
+    return JsonResponse({"message": message})
