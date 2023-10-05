@@ -2,14 +2,15 @@
   <div class="container flex-box between">
     <div class="buttons flex-box">
       <a href="/trade">중고거래</a>
-      <a href="/chat">채팅하기</a>
+      {% if user.is_authenticated %}
+      <a href="{% url 'awesome_app:chat' 0 user.id %}" class="ghost-button orange">대화하기</a>
+      {% endif %}
     </div>
     <div>
-      <p class="bold" style="margin-bottom:8px">당근 앱 다운로드</p>
+      <p class="bold" style="margin-bottom:8px">린지무 어-플 내려받기</p>
       <div class="download-center">
-        <button onclick="location.href='https://apps.apple.com/kr/app/%EB%8B%B9%EA%B7%BC/id1018769995'">App Store</button>
-        <button onclick="location.href='https://play.google.com/store/apps/details?id=com.towneers.www&hl=ko-KR'">Google Play</button>
-      </div>
+        <button onclick="location.href='https://apps.apple.com/kr/app/%EB%8B%B9%EA%B7%BC/id1018769995'">어-플 상점</button>
+        <button onclick="location.href='https://play.google.com/store/apps/details?id=com.towneers.www&hl=ko-KR'">구-글 놀이</button>
     </div>
   </div>
 </div>
