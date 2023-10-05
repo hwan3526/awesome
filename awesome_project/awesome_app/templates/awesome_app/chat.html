@@ -553,6 +553,22 @@
 
   });
 
+  document.addEventListener("DOMContentLoaded", function () {
+    const messageInput = document.querySelector('#chat-message-input');
+    const chatMessageSubmitBtn = document.querySelector('#chat-message-submit');
+
+    messageInput.addEventListener('input', function () {
+        if (messageInput.value.trim() !== '') {
+            chatMessageSubmitBtn.style.backgroundColor = '#fa6616';
+            chatMessageSubmitBtn.style.color = '#fff';
+          } else {
+            chatMessageSubmitBtn.style.backgroundColor = '#E1E1E1';
+            chatMessageSubmitBtn.style.color = '#000';
+        }
+    });
+});
+
+
 </script>
 
 </html>
