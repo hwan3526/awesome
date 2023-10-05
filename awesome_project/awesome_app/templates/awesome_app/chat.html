@@ -24,20 +24,6 @@
 
         <!-- 채팅선택창 -->
         <div class="chat-select-container">
-          <div class="flex-box">
-
-            <!-- 아이디및 체크박스 -->
-            <div class="id-box flex-box between">
-              <span id="username">{{ username }}</span>
-              <div>
-                <label>
-                  안읽은 메세지만 보기
-                  <input type="checkbox" name="" id="">
-                </label>
-              </div>
-            </div>
-          </div>
-
           <!-- 채팅 리스트 -->
           <div class="chat-list-box flex-box column">
             <!-- 봇 -->
@@ -50,6 +36,17 @@
                 <p class="chat-thumb-text">궁금한 내용을 물어보세요!</p>
               </div>
             </div>
+
+            <div class="chat-box flex-box">
+              <div class="ai-profile">
+                <img src="{% static 'img/awesome_logo.png'%}" alt="">
+              </div>
+              <div>
+                <p class="bold">대화형 AI 챗봇</p>
+                <p class="chat-thumb-text">궁금한 내용을 물어보세요!</p>
+              </div>
+            </div>
+
             <!-- 채팅방리스트 -->
             {% for msg in latest_messages %}
 
