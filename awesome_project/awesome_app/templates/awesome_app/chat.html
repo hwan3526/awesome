@@ -37,7 +37,7 @@
                 <p class="chat-thumb-text">퍼뜩 물어보라우</p>
               </div>
             </div>
-
+          </a>
             <div class="chat-box flex-box chatBotAi" onclick="chatWithAi(-1)" data-chat-room-id="-1">
               <div class="ai-profile">
                 <img src="{% static 'img/awesome_logo.png'%}" alt="">
@@ -47,7 +47,7 @@
                 <p class="chat-thumb-text">궁금한 내용을 물어보세요!</p>
               </div>
             </div>
-            </a>
+          
             <!-- 채팅방리스트 -->
             {% for msg in latest_messages %}
 

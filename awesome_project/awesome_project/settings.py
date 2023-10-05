@@ -28,9 +28,9 @@ SECRET_KEY = secrets['SECRET_KEY']
 API_KEY = secrets['API_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['localhost']
+ALLOWED_HOSTS = []
 
 
 # Application definition
