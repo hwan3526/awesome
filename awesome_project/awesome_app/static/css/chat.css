@@ -120,6 +120,18 @@ hr{
     border-bottom: 1px solid #e2e2e2;
 }
 
+#ai-chatbot-link {
+    width: -webkit-fill-available;
+    border-bottom: 1px solid #e2e2e2;
+    color: black;
+}
+
+#ai-chatbot-link > .chat-box {
+    padding: none;
+    border-bottom: none;
+    width: initial;
+}
+
 .chat-box:hover {
     cursor: pointer;
 }
