@@ -28,26 +28,26 @@
           <div class="chat-list-box flex-box column">
             <!-- 봇 -->
             <a href="#" id="ai-chatbot-link">
-            <div class="chat-box flex-box">
-              <div class="ai-profile">
-                <img src="{% static 'img/icon_aibot.png'%}" alt="">
+              <div class="chat-box flex-box">
+                <div class="ai-profile">
+                  <img src="{% static 'img/icon_aibot.png'%}" alt="">
+                </div>
+                <div>
+                  <p class="bold"> FAQ 린공 지능 로보-트</p>
+                  <p class="chat-thumb-text">퍼뜩 물어보라우</p>
+                </div>
               </div>
-              <div>
-                <p class="bold"> FAQ 린공 지능 로보-트</p>
-                <p class="chat-thumb-text">퍼뜩 물어보라우</p>
-              </div>
-            </div>
-          </a>
+            </a>
             <div class="chat-box flex-box chatBotAi" onclick="chatWithAi(-1)" data-chat-room-id="-1">
               <div class="ai-profile">
                 <img src="{% static 'img/autochatbot.png'%}" alt="">
               </div>
               <div>
-                <p class="bold">린공지능 로보-트</p>
+                <p class="bold">린공 지능 로보-트</p>
                 <p class="chat-thumb-text">궁금한건 날래날래 물어보라</p>
               </div>
             </div>
-          
+
             <!-- 채팅방리스트 -->
             {% for msg in latest_messages %}
 
@@ -481,8 +481,15 @@
     const popupWidth = 600; // 팝업 창의 너비를 지정합니다.
     const popupHeight = 700; // 팝업 창의 높이를 지정합니다.
 
+    const parentWidth = window.innerWidth;
+    const parentHeight = window.innerHeight;
+    const parentX = window.screenX + (parentWidth / 2);
+    const parentY = window.screenY + (parentHeight / 2);
+
     // 팝업 창을 엽니다.
-    window.open(popupUrl, popupName, `width=${popupWidth},height=${popupHeight}`);
+    // window.open(popupUrl, popupName, `width=${popupWidth},height=${popupHeight}`);
+    window.open(popupUrl, popupName, `width=${popupWidth},height=${popupHeight},left=${parentX - popupWidth / 2},top=${parentY - popupHeight / 2}`);
+
   });
 
   document.addEventListener("DOMContentLoaded", function () {
@@ -573,15 +580,15 @@
     const chatMessageSubmitBtn = document.querySelector('#chat-message-submit');
 
     messageInput.addEventListener('input', function () {
-        if (messageInput.value.trim() !== '') {
-            chatMessageSubmitBtn.style.backgroundColor = '#fa6616';
-            chatMessageSubmitBtn.style.color = '#fff';
-          } else {
-            chatMessageSubmitBtn.style.backgroundColor = '#E1E1E1';
-            chatMessageSubmitBtn.style.color = '#000';
-        }
+      if (messageInput.value.trim() !== '') {
+        chatMessageSubmitBtn.style.backgroundColor = '#fa6616';
+        chatMessageSubmitBtn.style.color = '#fff';
+      } else {
+        chatMessageSubmitBtn.style.backgroundColor = '#E1E1E1';
+        chatMessageSubmitBtn.style.color = '#000';
+      }
     });
-});
+  });
 
 
 </script>
