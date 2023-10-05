@@ -1,0 +1,194 @@
+{% load static%}{% load humanize %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Document</title>
+<link rel="stylesheet" type="text/css" href="{% static 'css/reset.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'css/global.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'css/nav.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'css/footer.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'css/chat.css' %}" />
+</head>
+<body>
+<div class="chat-main-container_popup">
+
+    
+    <div style="height:100%">
+        <!--채팅창 메인-->
+        <div class="message-box_chatbot from-you">
+                <center><div class="message-text">안녕하세요.챗봇입니다.무엇을 도와드릴까요?</div></center>
+                <div class="chatbot_select">
+                    
+                    <button class="message-text_q chatbot_q" id="info_man">사이트 소개</button>
+                    <button class="message-text_q chatbot_q" id="login_man">로그인 방법</button>
+                    <button class="message-text_q chatbot_q" id="signup_man">회원가입 방법</button>
+                    <button class="message-text_q chatbot_q" id="trade_man">게시글 작성 방법</button>
+                    <button class="message-text_q chatbot_q" id="auth_man">동네 인증 방법</button>
+                </div>
+        </div>
+        <div class="chat-container" id="chat-log" style="{% if not goods %}height: 350px;{% endif %}">
+            
+            {% for message in chat_messages %}
+            <div class="message-box {% if message.is_from_user %}from-you{% else %}from-me{% endif %}">
+                <div class="message-text">{{ message.content }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <form class="chat-input" id="chat-form">
+        {%csrf_token%}
+        <textarea type="text" id="chat-message-input" name="message" cols="30" rows="10"
+        placeholder="메세지를 입력해주세요"></textarea>
+        <div><button id="chat-message-submit" type="button">전송</button></div>
+    </form>
+
+</div>
+
+</body>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const chatLog = document.querySelector('#chat-log');
+        const messageInputDom = document.querySelector('#chat-message-input');
+        const chatMessageSubmitBtn = document.querySelector('#chat-message-submit');
+        
+        
+        function getCurrentTime() {
+        const now = new Date();
+        const hours = now.getHours();
+        const minutes = now.getMinutes();
+        const amOrPm = hours >= 12 ? 'PM' : 'AM';
+        const formattedHours = hours % 12 || 12;
+        const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+        const currentTime = `오늘 ${amOrPm} ${formattedHours}:${formattedMinutes}`;
+    
+        return currentTime;
+        }
+        const currentTime = getCurrentTime();
+    
+        function appendMessage(messageContent, isFromMe = false) {
+            const messageContainer = document.createElement('div');
+            messageContainer.className = isFromMe ? 'message-box from-me' : 'message-box from-you';
+    
+            const messageTextElement = document.createElement('div');
+            messageTextElement.className = 'message-text';
+            messageTextElement.textContent = messageContent;
+    
+            const timeElement = document.createElement('p');
+            timeElement.className = 's-text';
+            timeElement.textContent = currentTime;
+            if (isFromMe != false){
+                messageContainer.appendChild(timeElement);
+                messageContainer.appendChild(messageTextElement);
+            }
+            else{
+                messageContainer.appendChild(messageTextElement);
+                messageContainer.appendChild(timeElement);
+            }
+            chatLog.appendChild(messageContainer);
+            scrollToBottom();
+        }
+    
+    
+        function scrollToBottom() {
+        chatLog.scrollTop = chatLog.scrollHeight;
+        }
+    
+/////////////////////////////////////////////////////////////////////////
+        document.querySelector('#chat-message-input').addEventListener('keydown', function (e) {
+        if (e.keyCode === 13) {  // enter, return
+            e.preventDefault(); // 폼 제출을 막음
+            document.querySelector('#chat-message-submit').click();
+        }
+        });
+        
+        document.getElementById('info_man').addEventListener('click', function() {
+            const messageContent = "여긴 무슨 사이트야?"; // 전송할 메시지 내용
+            sendMessageToChatbot(messageContent);
+        });
+        
+        // 로그인 방법 버튼을 클릭했을 때 처리
+        document.getElementById('login_man').addEventListener('click', function() {
+            const messageContent = "로그인 어떻게 해야돼?"; // 전송할 메시지 내용
+            sendMessageToChatbot(messageContent);
+        });
+        
+        // 회원가입 방법 버튼을 클릭했을 때 처리
+        document.getElementById('signup_man').addEventListener('click', function() {
+            const messageContent = "회원가입 어디서 해야돼?"; // 전송할 메시지 내용
+            sendMessageToChatbot(messageContent);
+        });
+        
+        // 게시글 작성 방법 방법 버튼을 클릭했을 때 처리
+        document.getElementById('trade_man').addEventListener('click', function() {
+            const messageContent = "게시글 작성 어떻게 해야돼?"; // 전송할 메시지 내용
+            sendMessageToChatbot(messageContent);
+        });
+        
+        document.getElementById('auth_man').addEventListener('click', function() {
+            const messageContent = "동네 인증은 어떻게 해야돼?"; // 전송할 메시지 내용
+            sendMessageToChatbot(messageContent);
+        });
+//////////////////////////////////// 단축키로 대화 ////////////////////////////////////////////////
+        function sendMessageToChatbot(messageContent) {
+            const csrf_token = "{{ csrf_token }}"; // CSRF 토큰 가져오기
+            const userMessage = messageContent;
+        
+            // ChatterBot에 사용자 메시지를 보내고 응답을 가져옵니다.
+            fetch('/api/chatterbot/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrf_token, // CSRF 토큰을 전송합니다.
+                },
+                body: JSON.stringify({
+                    message: userMessage,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                const botMessage = data.message; // ChatterBot의 응답을 가져옵니다.
+                appendMessage(botMessage, false);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+////////////////////////////// 직접 입력해서 대화 ///////////////////////////////////////////
+
+        chatMessageSubmitBtn.addEventListener('click', function () {
+            const userMessage = messageInputDom.value;
+            const csrf_token = "{{ csrf_token }}";
+            if (userMessage.trim() !== '') { // 빈 메시지는 추가하지 않음
+                appendMessage(userMessage, true);
+        
+                // ChatterBot에 사용자 메시지를 보내고 응답을 가져옵니다.
+                fetch('/api/chatterbot/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrf_token, // csrf_token 변수를 사용하여 CSRF 토큰을 전송합니다.
+                    },
+                    body: JSON.stringify({
+                        message: userMessage,
+                    }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const botMessage = data.message; // ChatterBot의 응답을 가져옵니다.
+                    appendMessage(botMessage, false);
+                    messageInputDom.value = ''; // 입력 필드 비우기
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+                messageInputDom.value = '';
+            };
+            
+        });
+    });
+    
+</script>
+</html>
