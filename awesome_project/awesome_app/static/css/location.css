@@ -1,6 +1,6 @@
 .primary-button{
     padding: 16px;
-    background-color: #fa6616;
+    background-color: #B22222;
     color: #fff;
     border: none;
     border-radius: 8px;
@@ -11,7 +11,7 @@
 }
 
 .primary-button:hover{
-    background-color: #ff823f;
+    background-color: #B22222;
 }
 
 .region-setting-box{

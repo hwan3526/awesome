@@ -58,7 +58,7 @@ h3{
 }
 
 .button-box .orange {
-    background-color: #fa6616;
+    background-color: #B22222;
     color: #fff;
     font-weight: 700;
     padding: 12px 32px;
@@ -95,7 +95,7 @@ hr{
 }
 
 .temp{
-    border: 1px solid #fa6616;
+    border: 1px solid #B22222;
     font-size: 12px;
     border-radius: 48px;
     padding: 2px 6px;
@@ -218,7 +218,7 @@ hr{
 }
 
 .from-me div{
-    background-color: #fa6616;
+    background-color: #B22222;
     color: #fff;
 }
 
