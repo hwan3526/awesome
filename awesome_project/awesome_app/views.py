@@ -379,6 +379,11 @@ def set_region_certification(request):
     user_profile.save()
     return redirect('awesome_app:alert',alert_message='동네 인증이 완료되었습니다.')
 
+# @login_required
+# def chat(request, room_name, username):
+#     users = User.objects.get(username=username)
+#     # room_num = User.objects.get(room_name=room_name)
+#     return render(request, 'awesome_app/chat.html', {'room_name': room_name, 'username':users})
 
 def autocomplete(prompt):        
     try:
@@ -399,3 +404,68 @@ def autocomplete(prompt):
     except Exception as e:
         message = str(e)
     return JsonResponse({"message": message})
+
+from chatterbot import ChatBot
+from django.conf import settings
+from chatterbot.trainers import ChatterBotCorpusTrainer
+import time
+import json
+
+
+
+# Create your views here.
+
+import collections.abc
+collections.Hashable = collections.abc.Hashable 
+
+chatbot = ChatBot(**settings.CHATTERBOT, read_only=True)
+
+trainer = ChatterBotCorpusTrainer(chatbot)
+trainer.train('../awesome_project/awesome_project/chatbot_data.yml')
+
+# PostgreSQL을 사용하여 데이터베이스를 설정
+# chatbot.set_trainer(ChatterBotCorpusTrainer, storage_adapter='chatterbot.storage.SQLStorageAdapter')
+
+# trainer.export_for_training()로 데이터를 내보낸 후
+# exported_data = trainer.export_for_training()
+
+# # JSON 파일로 저장할 경로와 파일명 지정
+# file_path = './my_export.json'
+
+# # 데이터를 JSON 파일로 저장하고 한글 인코딩을 UTF-8로 설정
+# with open(file_path, 'w', encoding='utf-8') as json_file:
+#     json.dump(exported_data, json_file, ensure_ascii=False)
+
+def ai_chatbot_popup(request):
+    chat_messages = request.session.get('chat_messages', [])  # 세션에서 대화 기록을 가져옵니다.
+    # ChatBot 인스턴스 생성 및 훈련 (기존 훈련 데이터를 사용하여 훈련하거나 필요한 데이터를 추가로 훈련할 수 있음)
+
+        
+    if request.method == 'POST':
+        user_input = request.POST.get('user_input')
+        
+        
+
+        # 사용자 입력과 챗봇 응답을 생성하고 세션에 추가
+        user_message = {'content': user_input, 'is_from_user': True}
+        chat_messages.append(user_message)
+
+        response = chatbot.get_response(user_input)
+        bot_message = {'content': str(response), 'is_from_user': False}
+        chat_messages.append(bot_message)
+
+        # 대화 기록을 세션에 저장
+        request.session['chat_messages'] = chat_messages
+
+    return render(request, 'awesome_app/ai_chatbot_popup.html', {'chat_messages': chat_messages})
+
+def chatterbot_response(request):
+    if request.method == 'POST':
+        user_message = json.loads(request.body.decode('utf-8'))['message']
+
+
+        response = str(chatbot.get_response(user_message))
+
+        return JsonResponse({'message': response})
+
+    return JsonResponse({'error': 'Invalid request method'})

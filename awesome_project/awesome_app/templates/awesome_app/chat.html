@@ -27,16 +27,17 @@
           <!-- 채팅 리스트 -->
           <div class="chat-list-box flex-box column">
             <!-- 봇 -->
+            <a href="#" id="ai-chatbot-link">
             <div class="chat-box flex-box">
               <div class="ai-profile">
                 <img src="{% static 'img/icon_aibot.png'%}" alt="">
               </div>
               <div>
-                <p class="bold">AI 챗봇</p>
-                <p class="chat-thumb-text">궁금한 내용을 물어보세요!</p>
+                <p class="bold"> FAQ 린공 지능 로보-트</p>
+                <p class="chat-thumb-text">퍼뜩 물어보라우</p>
               </div>
             </div>
-
+          </a>
             <div class="chat-box flex-box chatBotAi" onclick="chatWithAi(-1)" data-chat-room-id="-1">
               <div class="ai-profile">
                 <img src="{% static 'img/autochatbot.png'%}" alt="">
@@ -46,7 +47,7 @@
                 <p class="chat-thumb-text">궁금한건 날래날래 물어보라</p>
               </div>
             </div>
-
+          
             <!-- 채팅방리스트 -->
             {% for msg in latest_messages %}
 
@@ -468,7 +469,21 @@
     });
 
   });
+  const aiChatbotLink = document.getElementById('ai-chatbot-link');
 
+  // 클릭 이벤트 핸들러를 추가합니다.
+  aiChatbotLink.addEventListener('click', function (event) {
+    event.preventDefault(); // 기본 링크 동작을 막습니다.
+
+    // 팝업 창을 열기 위한 설정을 정의합니다.
+    const popupUrl = '{% url 'awesome_app:ai_chatbot_popup' %}'; // 팝업으로 열고자 하는 view의 URL을 지정합니다.
+    const popupName = 'AIChatbotPopup'; // 팝업 창의 이름을 정의합니다.
+    const popupWidth = 600; // 팝업 창의 너비를 지정합니다.
+    const popupHeight = 700; // 팝업 창의 높이를 지정합니다.
+
+    // 팝업 창을 엽니다.
+    window.open(popupUrl, popupName, `width=${popupWidth},height=${popupHeight}`);
+  });
 
   document.addEventListener("DOMContentLoaded", function () {
     let isGoodsExpanded = false;
