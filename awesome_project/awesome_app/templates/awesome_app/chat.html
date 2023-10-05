@@ -305,10 +305,8 @@
 
       if (data.type === 'chat_bot_send') {
         const loadingMessage = document.querySelectorAll('.loading-message');
-
-        // loadingMessage.style.display = 'none';
         loadingMessage.forEach(element => {
-          element.remove(); // 각 요소를 삭제합니다.
+          element.remove(); 
         });
 
         const messageContainer = document.createElement('div');
@@ -365,8 +363,9 @@
             let second = document.createElement('div');
             second.className = 'message-box from-you';
             second.innerHTML = `
-              <p class="message-text loading-message"">
-                생각 중...
+              <p class="message-text loading-message">
+                <img class="autobotImg" src="{% static 'img/autobot.png'%}" style="height: 300px !important; width:500px;">
+                <span>생각 로동 중...</span>
               </p>
             `;
 
