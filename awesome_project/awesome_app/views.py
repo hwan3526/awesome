@@ -303,7 +303,10 @@ def current_chat(request, room_number, seller_id):
 @login_required
 def chat_with_ai(request):
 
-    chat_bot = User.objects.get(username='chatbot')
+    seller_profile = {
+        'username': '린공지능 로보-트',
+        'rating_score': '렬정 가득한 99.9'
+    }
 
     context = {
         "room_number" : -1,
@@ -311,7 +314,7 @@ def chat_with_ai(request):
         "latest_messages" : get_rooms(request),
         'first_unread_index': 0,
         'goods': [],
-        'seller': chat_bot
+        'seller': seller_profile
     }
 
     return render(request, 'awesome_app/chat.html', context)
