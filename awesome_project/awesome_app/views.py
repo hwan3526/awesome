@@ -12,9 +12,6 @@ from django.db.models import Q
 from django.utils import timezone
 import openai
 
-import sys
-sys.setrecursionlimit(100000)
-
 def index(request):
     top_views_posts = Post.objects.filter(product_sold='N').order_by('-view_num')[:4]
     return render(request, 'awesome_app/main.html', {"posts": top_views_posts})
@@ -250,6 +247,23 @@ def current_chat(request, room_number, seller_id):
     formatted_chat_msgs = []
     first_unread_index = -1
 
+    if room_number == 0 and seller_id == 12:
+        seller_profile = {
+            'username': '린공지능 로보-트',
+            'rating_score': '렬정 가득한 99.9'
+        }
+
+        context = {
+            "room_number" : -1,
+            "chat_msgs" : [],
+            "latest_messages" : get_rooms(request),
+            'first_unread_index': 0,    
+            'goods': [],
+            'seller': seller_profile
+        }
+
+        return render(request, 'awesome_app/chat.html', context)
+
     if room_number == 0:
         if seller_id == request.user.id:
             # 네비바에서 '채팅하기' 클릭한 경우 고객상담챗 열리도록
@@ -299,25 +313,6 @@ def current_chat(request, room_number, seller_id):
         "latest_messages" : get_rooms(request),
         'first_unread_index': first_unread_index,
         'goods': get_recent_trade(seller_id),
-        'seller': seller_profile
-    }
-
-    return render(request, 'awesome_app/chat.html', context)
-
-@login_required
-def chat_with_ai(request):
-
-    seller_profile = {
-        'username': '린공지능 로보-트',
-        'rating_score': '렬정 가득한 99.9'
-    }
-
-    context = {
-        "room_number" : -1,
-        "chat_msgs" : [],
-        "latest_messages" : get_rooms(request),
-        'first_unread_index': 0,
-        'goods': [],
         'seller': seller_profile
     }
 
