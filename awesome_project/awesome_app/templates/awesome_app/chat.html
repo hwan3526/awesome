@@ -132,11 +132,11 @@
                   </div>
                   <div class="goods-info-box">
                     <p>{{ good.title }}</p>
-                    <p class="bold">{{ good.price | intcomma }}</p>
+                    <p class="bold">{{ good.price | intcomma }} 원</p>
                   </div>
                 </div>
                 <div>
-                  <button class="sendChat" id="{{ good.id }}">채팅보내기</button>
+                  <button class="sendChat" id="{{ good.id }}">대화보내기</button>
                   {% if good.product_sold == 'Y' %}
                   <button>거래완료</button>
                   {% elif good.product_reserved == 'Y' %}
