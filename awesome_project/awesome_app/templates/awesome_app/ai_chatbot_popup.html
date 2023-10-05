@@ -40,9 +40,8 @@
 
     <form class="chat-input" id="chat-form">
         {%csrf_token%}
-        <textarea type="text" id="chat-message-input" name="message" cols="30" rows="10"
-        placeholder="메세지를 입력해주세요"></textarea>
-        <div><button id="chat-message-submit" type="button">전송</button></div>
+        <textarea id="chat-message-input" name="message" cols="30" rows="10"
+        placeholder="" readonly></textarea>
     </form>
 
 </div>
