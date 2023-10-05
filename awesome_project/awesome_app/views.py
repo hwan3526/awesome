@@ -418,7 +418,7 @@ import json
 import collections.abc
 collections.Hashable = collections.abc.Hashable 
 
-chatbot = ChatBot(**settings.CHATTERBOT, read_only=True)
+chatbot = ChatBot(settings.CHATTERBOT, read_only=True)
 
 trainer = ChatterBotCorpusTrainer(chatbot)
 trainer.train('../awesome_project/awesome_project/chatbot_data.yml')
