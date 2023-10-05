@@ -11,7 +11,7 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/nav.css' %}"/>
     <link rel="stylesheet" type="text/css" href="{% static 'css/footer.css' %}"/>
     <link rel="stylesheet" type="text/css" href="{% static 'css/login.css' %}"/>
-    <title>로그인</title>
+    <title>동무 린증</title>
   </head>
 
   <body class="back-ye">
@@ -31,10 +31,10 @@
             <span style = "color:red">{{field.errors}}</span>
             {% endif %}
             {% endfor %}
-            <button type="submit" class="login-button">로그인</button>
+            <button type="submit" class="login-button">동무 린증</button>
           </form>
           <p class="register-reco">
-            당근마켓 회원이 아니신가요?
+            린지무 동무가 아닌가? 날래 가입하라.
             <a href="{% url 'awesome_app:register' %}" class="bold">회원가입</a>
           </p>
         </div>
