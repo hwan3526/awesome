@@ -28,6 +28,5 @@ urlpatterns = [
     path('ai_chatbot_popup/', views.ai_chatbot_popup, name='ai_chatbot_popup'),
     path('api/chatterbot/', views.chatterbot_response, name='chatterbot_response'),
 
-    path('chat_with_ai/', views.chat_with_ai, name='chat_with_ai'),
 ]
 
