@@ -303,7 +303,7 @@ def current_chat(request, room_number, seller_id):
 
     seller_profile = {
         'username': '',
-        'rating_score': 0.0
+        'rating_score': 37.5
     }
 
     seller_profile['username'] = User.objects.get(id=seller_id).username
