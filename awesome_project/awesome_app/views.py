@@ -12,8 +12,12 @@ from django.db.models import Q
 from django.utils import timezone
 import openai
 
+import sys
+sys.setrecursionlimit(100000)
+
 def index(request):
-    return render(request, 'awesome_app/main.html')
+    top_views_posts = Post.objects.filter(product_sold='N').order_by('-view_num')[:4]
+    return render(request, 'awesome_app/main.html', {"posts": top_views_posts})
 
 def register(request):
     error_message = ''
@@ -378,12 +382,6 @@ def set_region_certification(request):
     user_profile.region_certification = 'Y'
     user_profile.save()
     return redirect('awesome_app:alert',alert_message='동네 인증이 완료되었습니다.')
-
-# @login_required
-# def chat(request, room_name, username):
-#     users = User.objects.get(username=username)
-#     # room_num = User.objects.get(room_name=room_name)
-#     return render(request, 'awesome_app/chat.html', {'room_name': room_name, 'username':users})
 
 def autocomplete(prompt):        
     try:
