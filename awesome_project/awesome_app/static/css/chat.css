@@ -410,3 +410,11 @@ a{
     overflow-y: auto;
     max-height: 380px; /* 굿즈 상자의 최대 높이를 설정할 수 있습니다. */
 }
+
+.loading-message {
+    display: flex;
+    flex-direction: column;
+}
+.loading-message img {
+    height: 300px;
+}
