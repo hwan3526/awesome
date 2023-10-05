@@ -181,8 +181,8 @@ CHATTERBOT = {
         },
     ],
     'database_uri': f"postgresql://{secrets['USER']}:{secrets['PASSWORD']}@{secrets['HOST']}:5432/{secrets['NAME']}",
-    'trainer': 'chatterbot.trainers.ChatterBotTrainer',
-    'training_data': [
-        'awesome_project/awesome_project/chatbot_data.yml',  # 여기에 YML 파일 경로를 추가
-    ],
+    # 'trainer': 'chatterbot.trainers.ChatterBotTrainer',
+    # 'training_data': [
+    #     'awesome_project/awesome_project/chatbot_data.yml',  # 여기에 YML 파일 경로를 추가
+    # ],
 }
