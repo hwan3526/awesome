@@ -17,9 +17,6 @@
             <a href="/location">
               <button id="location-button">동네인증</button>
             </a>
-            <a href="/local_life">
-              <button id="location-button">동무렴탐</button>
-            </a>
           {% endif %}
 
         </div>
@@ -30,10 +27,10 @@
         </form>
         {% if user.is_authenticated %}
         <a href="{% url 'awesome_app:chat' 0 user.id %}" class="ghost-button orange">대화하기</a>
-          <a href="{% url 'awesome_app:logout' %}" class="ghost-button">로그아웃</a>
+          <a href="{% url 'awesome_app:logout' %}" class="ghost-button">동무 나가기</a>
 
         {% else %}
-          <a href="{% url 'awesome_app:login' %}" class="ghost-button" style="color: #1e1e1e">로그인</a>
+          <a href="{% url 'awesome_app:login' %}" class="ghost-button" style="color: #1e1e1e">동무 린증</a>
         {% endif %}
       </div>
     </div>

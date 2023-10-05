@@ -188,11 +188,17 @@ def get_rooms(request):
 
             latest_message = chat_messages.objects.filter(chat_room=room).latest('created_at')
             seller = None
+            goods_img = None
 
             if latest_message.chat_room.buyer == request.user:
                 seller = latest_message.chat_room.seller
             else:
                 seller = latest_message.chat_room.buyer
+
+            try:
+                goods_img = Post.objects.filter(user=seller).latest('created_at')
+            except Post.DoesNotExist:
+                pass
 
             try:
                 seller_location = UserProfile.objects.get(user=seller).region
@@ -207,6 +213,7 @@ def get_rooms(request):
                 'message': latest_message.message,
                 'created_at': format_datetime(latest_message.created_at),
                 'unread_message_count': unread_message_count,
+                'goods_img': goods_img
             })
         except chat_messages.DoesNotExist:
             seller = None
@@ -229,6 +236,7 @@ def get_rooms(request):
                 'message': '',
                 'created_at': '',
                 'unread_message_count': 0,
+                'goods_img': None,
             })
             pass
 
@@ -266,7 +274,6 @@ def current_chat(request, room_number, seller_id):
 
     if room_number == 0:
         if seller_id == request.user.id:
-            # 네비바에서 '채팅하기' 클릭한 경우 고객상담챗 열리도록
             pass
         else:
             seller = User.objects.get(id=seller_id)

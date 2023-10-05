@@ -68,9 +68,11 @@
                   {% endif %}
                 </div>
               </div>
+              {% if msg.goods_img != None %}
               <div class="thumbnail-box">
-                <img src="" alt="">
+                <img src="{% static msg.goods_img.images.url %}" alt="">
               </div>
+              {% endif %}
 
             </div>
 
@@ -132,11 +134,11 @@
                   </div>
                   <div class="goods-info-box">
                     <p>{{ good.title }}</p>
-                    <p class="bold">{{ good.price | intcomma }}</p>
+                    <p class="bold">{{ good.price | intcomma }} 원</p>
                   </div>
                 </div>
                 <div>
-                  <button class="sendChat" id="{{ good.id }}">채팅보내기</button>
+                  <button class="sendChat" id="{{ good.id }}">대화보내기</button>
                   {% if good.product_sold == 'Y' %}
                   <button>거래완료</button>
                   {% elif good.product_reserved == 'Y' %}
@@ -324,11 +326,6 @@
         scrollToBottom();
       }
     }
-
-    ws.onclose= function(e){
-      console.log(e);
-              console.error('웹 소켓이 닫혔습니다');
-           };
 
     function scrollToBottom() {
       chatLog.scrollTop = chatLog.scrollHeight;
