@@ -110,6 +110,8 @@ hr{
 
 .chat-list-box{
     width: 100%;    
+    overflow-y: auto;
+    max-height: 100%;
 }
 
 .chat-box{
