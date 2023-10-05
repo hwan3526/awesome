@@ -3,7 +3,7 @@
     <div class="buttons flex-box">
       <a href="/trade">중고거래</a>
       {% if user.is_authenticated %}
-      <a href="{% url 'awesome_app:chat' 0 user.id %}" class="ghost-button orange">대화하기</a>
+      <a href="{% url 'awesome_app:chat' 0 user.id %}">대화하기</a>
       {% endif %}
     </div>
     <div>
