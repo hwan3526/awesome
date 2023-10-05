@@ -25,5 +25,7 @@ urlpatterns = [
 
     path('chat/<int:room_number>/<int:seller_id>', views.current_chat, name='chat'),
     path('chat_msg/<int:room_number>', views.chat_msg, name='chat_msg'),
+
+    path('chat_with_ai/', views.chat_with_ai, name='chat_with_ai'),
 ]
 
