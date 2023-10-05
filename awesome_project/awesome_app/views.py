@@ -418,7 +418,7 @@ import json
 import collections.abc
 collections.Hashable = collections.abc.Hashable 
 
-chatbot = ChatBot(settings.CHATTERBOT, read_only=True)
+chatbot = ChatBot(**settings.CHATTERBOT, read_only=True)
 
 trainer = ChatterBotCorpusTrainer(chatbot)
 trainer.train('../awesome_project/awesome_project/chatbot_data.yml')
@@ -440,11 +440,8 @@ def ai_chatbot_popup(request):
     chat_messages = request.session.get('chat_messages', [])  # 세션에서 대화 기록을 가져옵니다.
     # ChatBot 인스턴스 생성 및 훈련 (기존 훈련 데이터를 사용하여 훈련하거나 필요한 데이터를 추가로 훈련할 수 있음)
 
-        
     if request.method == 'POST':
         user_input = request.POST.get('user_input')
-        
-        
 
         # 사용자 입력과 챗봇 응답을 생성하고 세션에 추가
         user_message = {'content': user_input, 'is_from_user': True}
