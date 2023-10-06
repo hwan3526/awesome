@@ -418,11 +418,6 @@ import json
 import collections.abc
 collections.Hashable = collections.abc.Hashable 
 
-chatbot = ChatBot(**settings.CHATTERBOT, read_only=True)
-
-trainer = ChatterBotCorpusTrainer(chatbot)
-trainer.train('../awesome_project/awesome_project/chatbot_data.yml')
-
 # PostgreSQL을 사용하여 데이터베이스를 설정
 # chatbot.set_trainer(ChatterBotCorpusTrainer, storage_adapter='chatterbot.storage.SQLStorageAdapter')
 
@@ -437,6 +432,12 @@ trainer.train('../awesome_project/awesome_project/chatbot_data.yml')
 #     json.dump(exported_data, json_file, ensure_ascii=False)
 
 def ai_chatbot_popup(request):
+    global chatbot
+    chatbot = ChatBot(**settings.CHATTERBOT, read_only=True)
+
+    trainer = ChatterBotCorpusTrainer(chatbot)
+    trainer.train('./awesome_project/chatbot_data.yml')
+
     chat_messages = request.session.get('chat_messages', [])  # 세션에서 대화 기록을 가져옵니다.
     # ChatBot 인스턴스 생성 및 훈련 (기존 훈련 데이터를 사용하여 훈련하거나 필요한 데이터를 추가로 훈련할 수 있음)
 
