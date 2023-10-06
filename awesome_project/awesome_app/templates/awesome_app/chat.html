@@ -154,6 +154,12 @@
 
             <!--채팅창 메인-->
             <div class="chat-container" id="chat-log" style="{% if not goods %}height: 350px;{% endif %}">
+              {% if room_number == -1 %}
+              <div class="message-box from-you">
+                <div class="message-text">안녕한가 동무. 모르는건 뭐든 물어보라 기래.</div>
+                <p class="s-text">방금 전</p>
+              </div>
+              {% endif %}
               {% for chat in chat_msgs %}
               {% if request.user.username != chat.username %}
               <div class="message-box from-you">
